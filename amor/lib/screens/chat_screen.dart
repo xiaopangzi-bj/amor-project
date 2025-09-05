@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/product_filter_widget.dart';
 import '../widgets/research_widget.dart';
@@ -320,6 +322,73 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
     _addWelcomeMessage();
   }
 
+  void _showUserMenu() {
+    final authProvider = context.read<AuthProvider>();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 用户信息
+            if (authProvider.user != null) ...[
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: authProvider.user!.photoUrl != null
+                    ? NetworkImage(authProvider.user!.photoUrl!)
+                    : null,
+                child: authProvider.user!.photoUrl == null
+                    ? const Icon(Icons.person, size: 30)
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                authProvider.user!.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                authProvider.user!.email,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+            
+            // 登出按钮
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text(
+                '登出',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () async {
+                Navigator.pop(context);
+                await authProvider.signOut();
+              },
+            ),
+            
+            // 取消按钮
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('取消'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -332,7 +401,7 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'AI购物助手',
+          'Amor',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -344,6 +413,10 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.black),
             onPressed: _clearChat,
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: Colors.black),
+            onPressed: _showUserMenu,
           ),
         ],
       ),
