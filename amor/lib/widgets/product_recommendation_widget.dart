@@ -2,11 +2,23 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
 
+/// 产品推荐组件
+/// 显示AI分析结果、产品推荐、品牌轮播、反馈收集等完整的推荐界面
+/// 包含研究来源、审核分析、产品卡片、相关话题等多个功能模块
 class ProductRecommendationWidget extends StatelessWidget {
+  /// 聊天消息对象，包含推荐的上下文信息
   final ChatMessage message;
+  
+  /// AI分析结果文本，显示产品的详细分析
   final String analysis;
+  
+  /// 推荐的产品列表
   final List<Product> products;
 
+  /// 构造函数
+  /// @param message 聊天消息（必需）
+  /// @param analysis 分析文本（必需）
+  /// @param products 产品列表（必需）
   const ProductRecommendationWidget({
     super.key,
     required this.message,
@@ -14,6 +26,8 @@ class ProductRecommendationWidget extends StatelessWidget {
     required this.products,
   });
 
+  /// 构建产品推荐UI
+  /// 创建包含多个功能模块的完整推荐界面
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +35,7 @@ class ProductRecommendationWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 跳过选项
+          // 跳过选项 - 允许用户跳过当前推荐
           GestureDetector(
             onTap: () {
               // 可以添加跳过逻辑
@@ -55,56 +69,58 @@ class ProductRecommendationWidget extends StatelessWidget {
             ),
           ),
           
-          // 主题标签
+          // 主题标签 - 显示当前推荐的产品类别
           Container(
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFE5E5),
+              color: const Color(0xFFFFE5E5), // 浅红色背景
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
-              '飞行员夹克',
+              '飞行员夹克', // 产品类别标签
               style: TextStyle(
-                color: const Color(0xFFFF6B6B),
+                color: const Color(0xFFFF6B6B), // 红色文字
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
           
-          // 研究部分
+          // 研究部分 - 显示数据来源和研究信息
           _buildResearchSection(),
           
           const SizedBox(height: 20),
           
-          // 验证分析部分
+          // 验证分析部分 - 显示AI分析结果
           _buildVettedAnalysisSection(),
           
           const SizedBox(height: 20),
           
-          // 品牌轮播
+          // 品牌轮播 - 显示相关品牌选择
           _buildBrandCarousel(),
           
           const SizedBox(height: 20),
           
-          // 产品推荐
+          // 产品推荐 - 显示具体的产品推荐卡片
           _buildProductRecommendations(),
           
           const SizedBox(height: 20),
           
-          // 反馈部分
+          // 反馈部分 - 收集用户对推荐的反馈
           _buildFeedbackSection(),
           
           const SizedBox(height: 20),
           
-          // 相关话题
+          // 相关话题 - 显示相关的推荐话题
           _buildRelatedTopics(),
         ],
       ),
     );
   }
 
+  /// 构建研究部分UI
+  /// 显示数据来源、研究信息和来源链接
   Widget _buildResearchSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -131,7 +147,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               const Text(
-                'Research',
+                'Research', // 研究标题
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -146,7 +162,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
-                  '25 SOURCES',
+                  '25 SOURCES', // 数据来源数量标签
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -159,7 +175,7 @@ class ProductRecommendationWidget extends StatelessWidget {
           
           const SizedBox(height: 16),
           
-          // 来源链接
+          // 来源链接 - 水平滚动的数据来源列表
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -169,7 +185,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                 _buildSourceLink('FARFETCH.COM [3]'),
                 _buildSourceLink('REDDIT.COM [4]', isReddit: true),
                 Icon(
-                  Icons.arrow_forward_ios,
+                  Icons.arrow_forward_ios, // 更多来源指示箭头
                   size: 12,
                   color: Colors.grey.shade400,
                 ),
@@ -181,23 +197,27 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建数据来源链接标签
+  /// @param text 来源文本
+  /// @param isReddit 是否为Reddit来源（显示特殊图标）
   Widget _buildSourceLink(String text, {bool isReddit = false}) {
     return Container(
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: Colors.grey.shade100, // 浅灰色背景
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // 如果是Reddit来源，显示Reddit图标
           if (isReddit) ...[
             Container(
               width: 16,
               height: 16,
               decoration: const BoxDecoration(
-                color: Color(0xFFFF4500),
+                color: Color(0xFFFF4500), // Reddit橙色
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -209,7 +229,7 @@ class ProductRecommendationWidget extends StatelessWidget {
             const SizedBox(width: 6),
           ],
           Text(
-            text,
+            text, // 来源文本
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey.shade700,
@@ -221,6 +241,8 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建审核分析部分UI
+  /// 显示AI对产品的详细分析结果
   Widget _buildVettedAnalysisSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -247,7 +269,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               const Text(
-                'Vetted Analysis',
+                'Vetted Analysis', // 审核分析标题
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -260,11 +282,11 @@ class ProductRecommendationWidget extends StatelessWidget {
           const SizedBox(height: 16),
           
           Text(
-            analysis,
+            analysis, // 显示AI分析文本
             style: const TextStyle(
               fontSize: 14,
               color: Colors.black87,
-              height: 1.5,
+              height: 1.5, // 行高设置
             ),
           ),
         ],
@@ -272,7 +294,10 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建品牌轮播UI
+  /// 显示相关品牌的水平滚动列表，包含品牌头像和名称
   Widget _buildBrandCarousel() {
+    // 品牌数据列表，包含推荐的相关品牌
     final brands = [
       {'name': 'VETTED PICKS', 'image': 'https://via.placeholder.com/40x40/FF6B6B/FFFFFF?text=V'},
       {'name': 'COCKPIT USA', 'image': 'https://via.placeholder.com/40x40/8B4513/FFFFFF?text=C'},
@@ -283,17 +308,18 @@ class ProductRecommendationWidget extends StatelessWidget {
     ];
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.horizontal, // 水平滚动
       child: Row(
         children: brands.map((brand) => Container(
           margin: const EdgeInsets.only(right: 16),
           child: Column(
             children: [
+              // 品牌头像
               CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey.shade300,
                 child: Text(
-                  brand['name']![0],
+                  brand['name']![0], // 显示品牌名称首字母
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -301,6 +327,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+              // 品牌名称
               Text(
                 brand['name']!,
                 style: TextStyle(
@@ -316,6 +343,8 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建产品推荐列表UI
+  /// 显示所有推荐产品的卡片列表，按类别分组
   Widget _buildProductRecommendations() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,6 +353,7 @@ class ProductRecommendationWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 产品类别标题
             Text(
               product.category,
               style: const TextStyle(
@@ -333,6 +363,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+            // 产品卡片
             _buildProductCard(product),
           ],
         ),
@@ -340,6 +371,9 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建单个产品卡片UI
+  /// 显示产品图片、信息、评分、价格和特性标签
+  /// @param product 产品对象
   Widget _buildProductCard(Product product) {
     return Container(
       decoration: BoxDecoration(
@@ -356,12 +390,12 @@ class ProductRecommendationWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 产品图片
+          // 产品图片区域 - 占位符显示
           Container(
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: Colors.grey.shade200, // 浅灰色背景
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Center(
@@ -369,13 +403,13 @@ class ProductRecommendationWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.shopping_bag,
+                    Icons.shopping_bag, // 购物袋图标作为占位符
                     size: 48,
                     color: Colors.grey.shade400,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    product.name,
+                    product.name, // 产品名称
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 16,
@@ -411,23 +445,23 @@ class ProductRecommendationWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
-                    height: 1.4,
+                    height: 1.4, // 行高设置
                   ),
                 ),
                 
                 const SizedBox(height: 12),
                 
-                // 评分
+                // 评分显示
                 Row(
                   children: [
                     const Icon(
-                      Icons.star,
-                      color: Color(0xFFFFD700),
+                      Icons.star, // 星形评分图标
+                      color: Color(0xFFFFD700), // 金色
                       size: 16,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${product.rating} (${product.reviewCount})',
+                      '${product.rating} (${product.reviewCount})', // 评分和评论数
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade700,
@@ -439,12 +473,12 @@ class ProductRecommendationWidget extends StatelessWidget {
                 
                 const SizedBox(height: 12),
                 
-                // 价格比较
+                // 价格比较 - 显示不同商店的价格
                 ...product.prices.where((price) => price.price > 0).map((price) => 
                   Container(
                     margin: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      '${price.store} ${price.currency}${price.price.toInt()}',
+                      '${price.store} ${price.currency}${price.price.toInt()}', // 商店名称和价格
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
@@ -456,18 +490,18 @@ class ProductRecommendationWidget extends StatelessWidget {
                 
                 const SizedBox(height: 12),
                 
-                // 特性标签
+                // 特性标签 - 显示产品特性的标签云
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
+                  spacing: 8, // 水平间距
+                  runSpacing: 4, // 垂直间距
                   children: product.features.map((feature) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Colors.grey.shade100, // 浅灰色背景
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      feature,
+                      feature, // 特性文本
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade700,
@@ -483,6 +517,8 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建反馈区域UI
+  /// 显示用户反馈选项，询问推荐是否有帮助
   Widget _buildFeedbackSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -499,6 +535,7 @@ class ProductRecommendationWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
+          // 反馈标题
           const Text(
             'Was this helpful?',
             style: TextStyle(
@@ -508,12 +545,13 @@ class ProductRecommendationWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          // 反馈按钮行
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildFeedbackButton(Icons.thumb_up, 'YES', Colors.green),
+              _buildFeedbackButton(Icons.thumb_up, 'YES', Colors.green), // 正面反馈
               const SizedBox(width: 20),
-              _buildFeedbackButton(Icons.thumb_down, 'NO', Colors.red),
+              _buildFeedbackButton(Icons.thumb_down, 'NO', Colors.red), // 负面反馈
             ],
           ),
         ],
@@ -521,25 +559,29 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建反馈按钮UI
+  /// @param icon 按钮图标
+  /// @param text 按钮文本
+  /// @param color 按钮颜色主题
   Widget _buildFeedbackButton(IconData icon, String text, Color color) {
     return GestureDetector(
       onTap: () {
-        // 处理反馈
+        // 处理反馈逻辑
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withOpacity(0.1), // 半透明背景
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withOpacity(0.3)), // 半透明边框
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 16),
+            Icon(icon, color: color, size: 16), // 反馈图标
             const SizedBox(width: 4),
             Text(
-              text,
+              text, // 按钮文本
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.w500,
@@ -551,7 +593,10 @@ class ProductRecommendationWidget extends StatelessWidget {
     );
   }
 
+  /// 构建相关话题UI
+  /// 显示与当前推荐相关的话题链接列表
   Widget _buildRelatedTopics() {
+    // 相关话题列表
     final topics = [
       'Compare Vetted Picks',
       '最受欢迎的飞行员夹克品牌推荐',
@@ -575,6 +620,7 @@ class ProductRecommendationWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 相关话题标题
           const Text(
             'Related Topics',
             style: TextStyle(
@@ -584,13 +630,14 @@ class ProductRecommendationWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          // 话题链接列表
           ...topics.map((topic) => Container(
             margin: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    topic,
+                    topic, // 话题文本
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade700,
@@ -598,7 +645,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  Icons.arrow_forward_ios,
+                  Icons.arrow_forward_ios, // 箭头指示器
                   size: 12,
                   color: Colors.grey.shade400,
                 ),
