@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
-import '../models/user.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,38 +12,67 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authService = AuthService();
-  bool _isLoading = false;
-
   @override
-  void initState() {
-    super.initState();
-    _checkExistingLogin();
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8F6F0),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Logo和标题
+                  const Spacer(flex: 2),
+                  _buildHeader(),
+                  const SizedBox(height: 60),
+
+                  // 登录按钮
+                  _buildLoginButtons(authProvider),
+                  const SizedBox(height: 24),
+
+                  // 加载指示器
+                  if (authProvider.isLoading) _buildLoadingIndicator(),
+
+                  const Spacer(flex: 3),
+
+                  // 底部说明
+                  _buildFooter(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> _checkExistingLogin() async {
-    await _authService.initialize();
-    if (_authService.isLoggedIn) {
-      _navigateToChat();
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _signInWithGoogle(AuthProvider authProvider) async {
     try {
-      final User? user = await _authService.signInWithGoogle();
-      if (user != null) {
+      final success = await authProvider.signInWithGoogle();
+      if (success) {
         _navigateToChat();
+      } else {
+        _showErrorDialog('Google登录失败，请重试');
       }
     } catch (e) {
       _showErrorDialog('登录失败: ${e.toString()}');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    }
+  }
+
+  Future<void> _signInWithApple(AuthProvider authProvider) async {
+    try {
+      final success = await authProvider.signInWithApple();
+      if (success) {
+        _navigateToChat();
+      } else {
+        _showErrorDialog('苹果登录失败，请重试');
+      }
+    } catch (e) {
+      _showErrorDialog('登录失败: ${e.toString()}');
     }
   }
 
@@ -68,40 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F0),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Logo和标题
-              const Spacer(flex: 2),
-              _buildHeader(),
-              const SizedBox(height: 60),
-              
-              // 登录按钮
-              _buildLoginButton(),
-              const SizedBox(height: 24),
-              
-              // 加载指示器
-              if (_isLoading) _buildLoadingIndicator(),
-              
-              const Spacer(flex: 3),
-              
-              // 底部说明
-              _buildFooter(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildHeader() {
     return Column(
       children: [
@@ -114,20 +110,16 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFF6B6B).withOpacity(0.3),
+                color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: const Icon(
-            Icons.favorite,
-            size: 60,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.favorite, size: 60, color: Colors.white),
         ),
         const SizedBox(height: 32),
-        
+
         // 应用名称
         const Text(
           'Amor',
@@ -139,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // 副标题
         const Text(
           '您的AI购物研究助手',
@@ -150,34 +142,79 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // 描述
         const Text(
           '智能推荐最适合您的商品',
-          style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF95A5A6),
-          ),
+          style: TextStyle(fontSize: 14, color: Color(0xFF95A5A6)),
         ),
       ],
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildLoginButtons(AuthProvider authProvider) {
+    return Column(
+      children: [
+        // Google 登录按钮
+        _buildGoogleLoginButton(authProvider),
+        // 只在 iOS 和 macOS 上显示苹果登录按钮
+        if (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS) ...[
+          const SizedBox(height: 16),
+          _buildAppleLoginButton(authProvider),
+        ] else ...[
+          // 在 Android 上显示提示信息
+          const SizedBox(height: 16),
+          _buildPlatformInfo(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPlatformInfo() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: const Color(0xFF6C757D), size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '苹果登录仅在 iOS 和 macOS 设备上可用',
+              style: TextStyle(
+                fontSize: 14,
+                color: const Color(0xFF6C757D),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGoogleLoginButton(AuthProvider authProvider) {
     return Container(
       height: 56,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
         ],
       ),
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _signInWithGoogle,
+        onPressed: authProvider.isLoading
+            ? null
+            : () => _signInWithGoogle(authProvider),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: const Color(0xFF2C3E50),
@@ -189,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Google Logo (使用图标代替网络图片)
+            // Google Logo
             Container(
               width: 24,
               height: 24,
@@ -209,7 +246,62 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: _isLoading ? Colors.grey : const Color(0xFF2C3E50),
+                color: authProvider.isLoading
+                    ? Colors.grey
+                    : const Color(0xFF2C3E50),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppleLoginButton(AuthProvider authProvider) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: authProvider.isLoading
+            ? null
+            : () => _signInWithApple(authProvider),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // 苹果 Logo
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(Icons.apple, color: Colors.black, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              '使用 Apple 账户登录',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: authProvider.isLoading ? Colors.grey : Colors.white,
               ),
             ),
           ],
@@ -230,10 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 16),
           Text(
             '正在登录...',
-            style: TextStyle(
-              color: Color(0xFF7F8C8D),
-              fontSize: 14,
-            ),
+            style: TextStyle(color: Color(0xFF7F8C8D), fontSize: 14),
           ),
         ],
       ),
@@ -245,10 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         const Text(
           '登录即表示您同意我们的',
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF95A5A6),
-          ),
+          style: TextStyle(fontSize: 12, color: Color(0xFF95A5A6)),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -273,10 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const Text(
               ' 和 ',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xFF95A5A6),
-              ),
+              style: TextStyle(fontSize: 12, color: Color(0xFF95A5A6)),
             ),
             TextButton(
               onPressed: () {

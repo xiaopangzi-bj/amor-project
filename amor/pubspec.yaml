@@ -37,6 +37,11 @@ dependencies:
   
   # State management
   provider: ^6.1.2
+  
+  # Authentication
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.1
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

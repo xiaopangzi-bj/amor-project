@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ChatInput extends StatefulWidget {
   /// 发送消息时的回调函数，接收输入的文本内容
   final Function(String) onSendMessage;
-  
+
   /// 是否处于加载状态（发送消息时显示加载动画）
   final bool isLoading;
 
@@ -28,7 +28,7 @@ class ChatInput extends StatefulWidget {
 class _ChatInputState extends State<ChatInput> {
   /// 文本输入控制器，用于管理输入框的文本内容
   final TextEditingController _controller = TextEditingController();
-  
+
   /// 焦点节点，用于管理输入框的焦点状态
   final FocusNode _focusNode = FocusNode();
 
@@ -62,13 +62,14 @@ class _ChatInputState extends State<ChatInput> {
         color: Colors.white, // 白色背景
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2), // 向上的阴影效果
           ),
         ],
       ),
-      child: SafeArea( // 确保内容不被系统UI遮挡
+      child: SafeArea(
+        // 确保内容不被系统UI遮挡
         child: Row(
           children: [
             // 输入框区域
@@ -105,23 +106,27 @@ class _ChatInputState extends State<ChatInput> {
                 height: 48,
                 decoration: BoxDecoration(
                   // 加载时灰色，正常时红色
-                  color: widget.isLoading 
+                  color: widget.isLoading
                       ? Colors.grey.shade300
                       : const Color(0xFFFF6B6B),
                   shape: BoxShape.circle, // 圆形按钮
                 ),
                 child: widget.isLoading
-                    ? const Center( // 加载状态显示进度指示器
+                    ? const Center(
+                        // 加载状态显示进度指示器
                         child: SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         ),
                       )
-                    : const Icon( // 正常状态显示发送图标
+                    : const Icon(
+                        // 正常状态显示发送图标
                         Icons.send,
                         color: Colors.white,
                         size: 20,

@@ -2,12 +2,20 @@ buildscript {
     dependencies {
         classpath("com.google.gms:google-services:4.4.0")
     }
+    repositories {
+        // 替换为国内镜像
+       maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+    }
 }
 
 allprojects {
     repositories {
-        google()
-        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
     }
 }
 

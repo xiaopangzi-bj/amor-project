@@ -1,4 +1,10 @@
 import '../models/user.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'dart:math';
 
 /// 认证服务类
 /// 负责处理用户认证相关的所有操作，包括Google登录、登出、用户状态管理等
@@ -13,13 +19,15 @@ class AuthService {
   User? _currentUser;
   // 加载状态标识
   bool _isLoading = false;
+  // Google Sign-In 实例
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   /// 获取当前登录用户
   User? get currentUser => _currentUser;
-  
+
   /// 获取加载状态
   bool get isLoading => _isLoading;
-  
+
   /// 检查是否已登录
   bool get isLoggedIn => _currentUser != null;
 
@@ -28,34 +36,45 @@ class AuthService {
   /// 在实际应用中，这里会检查本地存储或安全存储中的用户信息
   Future<void> initialize() async {
     try {
-      // 模拟检查本地存储的登录状态
-      // 在实际应用中，这里会检查本地存储或安全存储中的用户信息
+      // 检查是否有已登录的 Google 用户
+      final GoogleSignInAccount? googleUser = await _googleSignIn
+          .signInSilently();
+      if (googleUser != null) {
+        _currentUser = User(
+          id: googleUser.id,
+          email: googleUser.email,
+          name: googleUser.displayName ?? '',
+          photoUrl: googleUser.photoUrl ?? '',
+          displayName: googleUser.displayName ?? '',
+        );
+      }
       print('初始化认证服务');
     } catch (e) {
       print('初始化认证服务时出错: $e');
     }
   }
 
-  /// Google登录方法（模拟实现）
-  /// 执行Google OAuth登录流程
+  /// Google登录方法
+  /// 使用 Google Sign-In 插件执行Google OAuth登录流程
   /// @return 登录成功返回用户信息，失败返回null
   Future<User?> signInWithGoogle() async {
     try {
       _isLoading = true; // 设置加载状态
-      
-      // 模拟Google登录过程，实际应用中会调用Google Sign-In API
-      await Future.delayed(const Duration(seconds: 2));
-      
-      // 创建模拟用户数据
-      // 在实际应用中，这些数据来自Google账户信息
-      _currentUser = User(
-        id: '123456789',
-        email: 'user@example.com',
-        name: '测试用户',
-        photoUrl: 'https://via.placeholder.com/150/FF6B6B/FFFFFF?text=U',
-        displayName: '测试用户',
-      );
-      
+
+      // 使用 Google Sign-In 进行登录
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser != null) {
+        // 创建用户数据
+        _currentUser = User(
+          id: googleUser.id,
+          email: googleUser.email,
+          name: googleUser.displayName ?? '',
+          photoUrl: googleUser.photoUrl ?? '',
+          displayName: googleUser.displayName ?? '',
+        );
+      }
+
       _isLoading = false; // 清除加载状态
       return _currentUser;
     } catch (e) {
@@ -65,13 +84,75 @@ class AuthService {
     }
   }
 
+  /// 苹果登录方法
+  /// 使用 Apple Sign-In 插件执行苹果登录流程
+  /// 仅在 iOS 和 macOS 平台上可用
+  /// @return 登录成功返回用户信息，失败返回null
+  Future<User?> signInWithApple() async {
+    // 检查是否在支持的平台上
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.macOS) {
+      throw UnsupportedError('苹果登录仅在 iOS 和 macOS 平台上支持');
+    }
+
+    try {
+      _isLoading = true; // 设置加载状态
+
+      // 生成随机字符串作为 nonce
+      final rawNonce = _generateNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      // 使用 Apple Sign-In 进行登录
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+
+      if (credential.userIdentifier != null &&
+          credential.userIdentifier!.isNotEmpty) {
+        // 创建用户数据
+        _currentUser = User(
+          id: credential.userIdentifier!,
+          email: credential.email ?? '',
+          name: '${credential.givenName ?? ''} ${credential.familyName ?? ''}'
+              .trim(),
+          photoUrl: '', // Apple 不提供头像
+          displayName:
+              '${credential.givenName ?? ''} ${credential.familyName ?? ''}'
+                  .trim(),
+        );
+      }
+
+      _isLoading = false; // 清除加载状态
+      return _currentUser;
+    } catch (e) {
+      _isLoading = false; // 发生错误时也要清除加载状态
+      print('苹果登录失败: $e');
+      rethrow; // 重新抛出异常供上层处理
+    }
+  }
+
+  /// 生成随机 nonce 用于 Apple Sign-In
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
   /// 用户登出方法
   /// 清除当前用户信息并执行登出操作
   Future<void> signOut() async {
     try {
       _isLoading = true; // 设置加载状态
-      // 模拟登出过程，实际应用中会调用相关API清除认证信息
-      await Future.delayed(const Duration(milliseconds: 500));
+      // 登出 Google 账户
+      await _googleSignIn.signOut();
       _currentUser = null; // 清除当前用户信息
       _isLoading = false; // 清除加载状态
     } catch (e) {

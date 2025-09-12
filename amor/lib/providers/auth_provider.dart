@@ -11,25 +11,25 @@ import '../services/auth_service.dart';
 class AuthProvider with ChangeNotifier {
   /// 认证服务实例，处理具体的认证逻辑
   final AuthService _authService = AuthService();
-  
+
   /// 当前登录用户信息，null表示未登录
   User? _user;
-  
+
   /// 是否正在执行认证相关操作（登录、登出等）
   bool _isLoading = false;
-  
+
   /// 认证状态是否已初始化
   bool _isInitialized = false;
 
   /// 获取当前用户信息
   User? get user => _user;
-  
+
   /// 获取加载状态
   bool get isLoading => _isLoading;
-  
+
   /// 判断用户是否已登录
   bool get isLoggedIn => _user != null;
-  
+
   /// 判断认证状态是否已初始化
   bool get isInitialized => _isInitialized;
 
@@ -39,7 +39,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> initialize() async {
     // 如果已经初始化过，直接返回
     if (_isInitialized) return;
-    
+
     // 设置加载状态并通知监听者
     _isLoading = true;
     notifyListeners();
@@ -81,6 +81,43 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       // 记录登录失败的错误信息
       debugPrint('Google登录失败: $e');
+    }
+
+    // 登录失败，重置加载状态
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  /// 使用苹果账号登录
+  /// 调用认证服务进行苹果登录，成功后更新用户状态
+  /// 仅在 iOS 和 macOS 平台上可用
+  /// @return 登录是否成功
+  Future<bool> signInWithApple() async {
+    // 检查是否在支持的平台上
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.macOS) {
+      debugPrint('苹果登录仅在 iOS 和 macOS 平台上支持');
+      return false;
+    }
+
+    // 设置加载状态
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // 调用认证服务进行苹果登录
+      final user = await _authService.signInWithApple();
+      if (user != null) {
+        // 登录成功，保存用户信息
+        _user = user;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      // 记录登录失败的错误信息
+      debugPrint('苹果登录失败: $e');
     }
 
     // 登录失败，重置加载状态

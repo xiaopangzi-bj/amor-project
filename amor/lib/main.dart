@@ -78,7 +78,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 children: [
                   // 加载指示器，使用应用主色调
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6B6B)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFFFF6B6B),
+                    ),
                   ),
                   SizedBox(height: 16),
                   // 加载提示文本
