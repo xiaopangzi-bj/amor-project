@@ -80,7 +80,7 @@ class ProductRecommendationWidget extends StatelessWidget {
             child: Text(
               '飞行员夹克', // 产品类别标签
               style: TextStyle(
-                color: const Color(0xFFFF6B6B), // 红色文字
+                color: const Color(0xFFE91E63), // 粉色文字
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -264,7 +264,7 @@ class ProductRecommendationWidget extends StatelessWidget {
             children: [
               const Icon(
                 Icons.favorite,
-                color: Color(0xFFFF6B6B),
+                color: Color(0xFFE91E63),
                 size: 20,
               ),
               const SizedBox(width: 8),

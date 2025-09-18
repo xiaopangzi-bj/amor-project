@@ -31,10 +31,14 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           // 使用Material Design 3主题
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFFFF6B6B), // 主色调：温暖的红色
+            seedColor: const Color(0xFFE91E63), // 主色调：粉色系
             brightness: Brightness.light, // 亮色主题
           ),
           useMaterial3: true, // 启用Material Design 3
+          // 自定义粉色系配色
+          primarySwatch: Colors.pink,
+          primaryColor: const Color(0xFFE91E63),
+          scaffoldBackgroundColor: const Color(0xFFFCE4EC),
         ),
         home: const AuthWrapper(), // 设置首页为认证包装器
       ),
@@ -71,15 +75,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
         // 如果认证状态还在初始化或正在加载，显示加载页面
         if (!authProvider.isInitialized || authProvider.isLoading) {
           return const Scaffold(
-            backgroundColor: Color(0xFFF8F6F0), // 温暖的米色背景
+            backgroundColor: Color(0xFFFCE4EC), // 粉色系背景
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 加载指示器，使用应用主色调
+                  // 加载指示器，使用粉色系主色调
                   CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFFF6B6B),
+                      Color(0xFFE91E63),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -87,7 +91,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   Text(
                     '正在加载...',
                     style: TextStyle(
-                      color: Color(0xFF7F8C8D), // 柔和的灰色
+                      color: Color(0xFF880E4F), // 深粉色
                       fontSize: 16,
                     ),
                   ),

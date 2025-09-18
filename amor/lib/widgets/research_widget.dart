@@ -64,7 +64,7 @@ class ResearchWidget extends StatelessWidget {
             child: Text(
               '飞行员夹克',
               style: TextStyle(
-                color: const Color(0xFFFF6B6B),
+                color: const Color(0xFFE91E63),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),

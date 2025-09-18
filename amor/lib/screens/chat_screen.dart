@@ -373,7 +373,51 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
               ),
               onTap: () async {
                 Navigator.pop(context);
-                await authProvider.signOut();
+                try {
+                  // 显示登出确认对话框
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('确认登出'),
+                      content: const Text('您确定要登出吗？'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('取消'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('确认'),
+                        ),
+                      ],
+                    ),
+                  );
+                  
+                  if (shouldLogout == true) {
+                    // 执行登出操作
+                    await authProvider.signOut();
+                    
+                    // 显示登出成功提示
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('已成功登出'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  // 显示登出失败提示
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('登出失败: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
               },
             ),
             
@@ -396,14 +440,14 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F0),
+      backgroundColor: const Color(0xFFFCE4EC), // 粉色系背景
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFE91E63), // 粉色系AppBar
         elevation: 0,
         title: const Text(
           'Amor',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -411,11 +455,11 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _clearChat,
           ),
           IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.black),
+            icon: const Icon(Icons.account_circle, color: Colors.white),
             onPressed: _showUserMenu,
           ),
         ],
@@ -437,7 +481,7 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6B6B)),
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)),
                       ),
                     ),
                   );

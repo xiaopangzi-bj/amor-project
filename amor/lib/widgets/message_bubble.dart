@@ -37,7 +37,7 @@ class MessageBubble extends StatelessWidget {
           if (!message.isUser) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: const Color(0xFFFF6B6B), // 红色背景
+              backgroundColor: const Color(0xFFE91E63), // 粉色背景
               child: const Icon(
                 Icons.smart_toy, // 机器人图标
                 color: Colors.white,
@@ -55,7 +55,7 @@ class MessageBubble extends StatelessWidget {
                 decoration: BoxDecoration(
                   // 用户消息红色背景，AI消息白色背景
                   color: message.isUser 
-                      ? const Color(0xFFFF6B6B)
+                      ? const Color(0xFFE91E63)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20), // 圆角气泡
                   boxShadow: [

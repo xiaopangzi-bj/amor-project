@@ -61,7 +61,7 @@ class ProductFilterWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: const Color(0xFFFF6B6B),
+                backgroundColor: const Color(0xFFE91E63),
                 child: const Icon(
                   Icons.smart_toy,
                   color: Colors.white,

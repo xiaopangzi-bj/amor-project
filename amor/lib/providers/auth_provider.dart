@@ -138,9 +138,15 @@ class AuthProvider with ChangeNotifier {
       await _authService.signOut();
       // 清除本地用户信息
       _user = null;
+      // 重置初始化状态，确保下次启动时重新初始化
+      _isInitialized = false;
+      debugPrint('用户登出成功');
     } catch (e) {
       // 记录登出失败的错误信息
       debugPrint('登出失败: $e');
+      // 即使登出失败，也要清除本地用户状态，避免状态不一致
+      _user = null;
+      _isInitialized = false;
     } finally {
       // 重置加载状态并通知监听者
       _isLoading = false;

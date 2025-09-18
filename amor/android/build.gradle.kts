@@ -1,21 +1,26 @@
 buildscript {
     dependencies {
-        classpath("com.google.gms:google-services:4.4.0")
+        classpath("com.google.gms:google-services:4.4.1")
     }
     repositories {
-        // 替换为国内镜像
-       maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        // 国内镜像作为备选
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
     }
 }
 
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        google()
+        mavenCentral()
+        // 国内镜像作为备选
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public") }
     }
 }
 

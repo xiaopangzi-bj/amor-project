@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 /// 聊天输入组件
 /// 提供文本输入框和发送按钮，支持加载状态显示
@@ -32,6 +33,17 @@ class _ChatInputState extends State<ChatInput> {
   /// 焦点节点，用于管理输入框的焦点状态
   final FocusNode _focusNode = FocusNode();
 
+  /// 初始化组件
+  /// 在组件构建完成后自动获取焦点
+  @override
+  void initState() {
+    super.initState();
+    // 延迟获取焦点，确保组件完全构建完成
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
   /// 释放资源
   /// 在组件销毁时清理控制器和焦点节点，防止内存泄漏
   @override
@@ -49,6 +61,12 @@ class _ChatInputState extends State<ChatInput> {
     if (text.isNotEmpty && !widget.isLoading) {
       widget.onSendMessage(text); // 调用发送回调
       _controller.clear(); // 清空输入框
+      // 延迟重新获取焦点，避免键盘闪烁
+      Timer(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _focusNode.requestFocus();
+        }
+      });
     }
   }
 
@@ -105,10 +123,10 @@ class _ChatInputState extends State<ChatInput> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  // 加载时灰色，正常时红色
+                  // 加载时灰色，正常时粉色
                   color: widget.isLoading
                       ? Colors.grey.shade300
-                      : const Color(0xFFFF6B6B),
+                      : const Color(0xFFE91E63),
                   shape: BoxShape.circle, // 圆形按钮
                 ),
                 child: widget.isLoading

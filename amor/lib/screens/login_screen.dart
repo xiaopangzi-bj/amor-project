@@ -54,12 +54,29 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final success = await authProvider.signInWithGoogle();
       if (success) {
+        // 显示成功提示
+        _showSuccessSnackBar('登录成功！正在跳转...');
+        // 延迟一下再跳转，让用户看到成功提示
+        await Future.delayed(const Duration(milliseconds: 500));
         _navigateToChat();
       } else {
-        _showErrorDialog('Google登录失败，请重试');
+        _showErrorDialog('Google登录失败', '登录过程被取消或失败，请重试');
       }
     } catch (e) {
-      _showErrorDialog('登录失败: ${e.toString()}');
+      String errorMessage = '登录失败，请重试';
+      
+      // 根据错误类型提供更具体的错误信息
+      if (e.toString().contains('网络')) {
+        errorMessage = '网络连接失败，请检查网络后重试';
+      } else if (e.toString().contains('验证失败')) {
+        errorMessage = '身份验证失败，请重试';
+      } else if (e.toString().contains('ID Token')) {
+        errorMessage = 'Google认证失败，请重试';
+      } else if (e.toString().contains('后端')) {
+        errorMessage = '服务器验证失败，请稍后重试';
+      }
+      
+      _showErrorDialog('登录失败', errorMessage);
     }
   }
 
@@ -67,12 +84,22 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final success = await authProvider.signInWithApple();
       if (success) {
+        _showSuccessSnackBar('登录成功！正在跳转...');
+        await Future.delayed(const Duration(milliseconds: 500));
         _navigateToChat();
       } else {
-        _showErrorDialog('苹果登录失败，请重试');
+        _showErrorDialog('Apple登录失败', '登录过程被取消或失败，请重试');
       }
     } catch (e) {
-      _showErrorDialog('登录失败: ${e.toString()}');
+      String errorMessage = '登录失败，请重试';
+      
+      if (e.toString().contains('网络')) {
+        errorMessage = '网络连接失败，请检查网络后重试';
+      } else if (e.toString().contains('验证失败')) {
+        errorMessage = '身份验证失败，请重试';
+      }
+      
+      _showErrorDialog('登录失败', errorMessage);
     }
   }
 
@@ -82,11 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('错误'),
+        title: Text(title),
         content: Text(message),
         actions: [
           TextButton(
@@ -94,6 +121,26 @@ class _LoginScreenState extends State<LoginScreen> {
             child: const Text('确定'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
   }
@@ -106,11 +153,11 @@ class _LoginScreenState extends State<LoginScreen> {
           width: 120,
           height: 120,
           decoration: BoxDecoration(
-            color: const Color(0xFFFF6B6B),
+            color: const Color(0xFFE91E63),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
+                color: const Color(0xFFE91E63).withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -121,13 +168,23 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 32),
 
         // 应用名称
-        const Text(
-          'Amor',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2C3E50),
-            letterSpacing: 2,
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [
+              Color(0xFFE91E63), // 深粉色
+              Color(0xFFFF6B9D), // 亮粉色
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: const Text(
+            'Amor',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.white, // 这个颜色会被渐变覆盖
+              letterSpacing: 2,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -165,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ] else ...[
           // 在 Android 上显示提示信息
           const SizedBox(height: 16),
-          _buildPlatformInfo(),
+          // _buildPlatformInfo(),
         ],
       ],
     );
@@ -316,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           SizedBox(height: 16),
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6B6B)),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)),
             strokeWidth: 2,
           ),
           SizedBox(height: 16),
@@ -352,7 +409,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 '服务条款',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFFF6B6B),
+                  color: Color(0xFFE91E63),
                   decoration: TextDecoration.underline,
                 ),
               ),
@@ -374,7 +431,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 '隐私政策',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFFF6B6B),
+                  color: Color(0xFFE91E63),
                   decoration: TextDecoration.underline,
                 ),
               ),
