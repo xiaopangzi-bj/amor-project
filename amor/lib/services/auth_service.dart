@@ -1,14 +1,14 @@
 import '../models/user.dart' as app_models;
 import 'api_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../config/oauth_config.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 // 移除dart:js导入以避免平台兼容性问题
 
 /// 认证服务类
@@ -87,9 +87,28 @@ class AuthService {
   /// 在实际应用中，这里会检查本地存储或安全存储中的用户信息
   Future<void> initialize() async {
     try {
+      print('开始初始化认证服务...');
+      
+      // 添加超时机制
+      await Future.any([
+        _performGoogleSignInCheck(),
+        Future.delayed(const Duration(seconds: 8), () {
+          throw TimeoutException('Google Sign-In检查超时', const Duration(seconds: 8));
+        }),
+      ]);
+      
+      print('认证服务初始化完成');
+    } catch (e) {
+      print('初始化认证服务时出错: $e');
+      // 不重新抛出异常，让应用继续运行
+    }
+  }
+
+  /// 执行Google Sign-In静默登录检查
+  Future<void> _performGoogleSignInCheck() async {
+    try {
       // 检查是否有已登录的 Google 用户
-      final GoogleSignInAccount? googleUser = await _googleSignIn
-          .signInSilently();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signInSilently();
       if (googleUser != null) {
         _currentUser = app_models.User(
           id: googleUser.id,
@@ -98,10 +117,13 @@ class AuthService {
           photoUrl: googleUser.photoUrl ?? '',
           displayName: googleUser.displayName ?? '',
         );
+        print('发现已登录用户: ${googleUser.email}');
+      } else {
+        print('未发现已登录用户');
       }
-      print('初始化认证服务');
     } catch (e) {
-      print('初始化认证服务时出错: $e');
+      print('Google Sign-In静默登录检查失败: $e');
+      // 不重新抛出异常
     }
   }
 
@@ -183,9 +205,24 @@ class AuthService {
       GoogleSignInAccount? googleUser;
       
       try {
+        print('正在启动Google登录界面...');
         googleUser = await _googleSignIn.signIn();
+      } on PlatformException catch (platformError) {
+        print('平台异常: ${platformError.code} - ${platformError.message}');
+        if (platformError.code == 'sign_in_canceled') {
+          print('用户取消了登录');
+          return null;
+        } else if (platformError.code == 'sign_in_failed') {
+          print('登录失败，可能是网络问题或配置问题');
+          return null;
+        } else if (platformError.code == 'network_error') {
+          print('网络连接错误');
+          return null;
+        }
+        rethrow;
       } catch (signInError) {
         print('Google登录过程中出错: $signInError');
+        print('错误类型: ${signInError.runtimeType}');
         if (signInError.toString().contains('aborted')) {
           print('登录被中止，可能是用户取消或网络问题');
           return null;
@@ -219,26 +256,33 @@ class AuthService {
         googleAuth = await googleUser.authentication;
       } catch (authError) {
         print('获取认证信息时出错: $authError');
+        print('错误类型: ${authError.runtimeType}');
         if (authError.toString().contains('aborted')) {
           print('认证过程被中止');
           return null;
         }
         throw Exception('获取认证信息失败: $authError');
       }
-      print('获取到Google认证信息: $googleAuth');
+      
+      print('获取到Google认证信息');
       if (googleAuth.idToken == null) {
         print('错误: 无法获取Google ID Token');
         throw Exception('无法获取Google ID Token');
       }
+      
+      if (googleAuth.accessToken == null) {
+        print('警告: 无法获取Google Access Token');
+      }
 
       print('获取到Google ID Token: ${googleAuth.idToken?.substring(0, 20)}...');
-      print('Access Token: ${googleAuth.accessToken?.substring(0, 20)}...');
+      print('Access Token: ${googleAuth.accessToken?.substring(0, 20) ?? "未获取到"}...');
 
       // 第三步：将ID Token发送到后端进行验证
       try {
+        print('正在向后端验证Google Token...');
         final backendResponse = await _apiService.verifyGoogleToken(googleAuth.idToken!);
         
-        // 第三步：使用后端返回的用户信息创建User对象
+        // 使用后端返回的用户信息创建User对象
         if (backendResponse['success'] == true && backendResponse['user'] != null) {
           _currentUser = app_models.User.fromJson(backendResponse['user']);
           print('后端验证成功，用户信息: ${_currentUser?.email}');
@@ -247,7 +291,8 @@ class AuthService {
         }
       } catch (apiError) {
         // 如果后端验证失败，回退到本地用户信息（可选）
-        print('后端验证失败，使用本地用户信息: $apiError');
+        print('后端验证失败: $apiError');
+        print('错误类型: ${apiError.runtimeType}');
         
         // 可以选择是否允许离线模式
         // 这里我们仍然抛出异常，要求必须通过后端验证
@@ -272,6 +317,7 @@ class AuthService {
         _disableGooglePrompt();
       }
       
+      print('Google登录流程完成，用户: ${_currentUser?.email}');
       return _currentUser;
     } catch (e) {
       // 确保加载状态被清除
@@ -314,6 +360,9 @@ class AuthService {
       } else if (e.toString().contains('Future already completed')) {
         print('异步操作重复完成错误，这通常是由于多次调用导致的');
         return null; // 对于Future已完成的错误，返回null
+      } else if (e.toString().contains('timeout')) {
+        print('操作超时: 请检查网络连接或稍后重试');
+        return null;
       }
       
       print('=== 调试建议 ===');
@@ -322,11 +371,13 @@ class AuthService {
       print('3. 检查浏览器控制台是否有CORS错误');
       print('4. 确认Google API已启用');
       print('5. 避免快速重复点击登录按钮');
+      print('6. 检查网络连接是否稳定');
       
       // 对于严重错误才重新抛出异常
       if (!e.toString().contains('canceled') && 
           !e.toString().contains('aborted') &&
           !e.toString().contains('network_error') &&
+          !e.toString().contains('timeout') &&
           !e.toString().contains('Future already completed')) {
         rethrow;
       }

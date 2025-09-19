@@ -16,9 +16,19 @@ import 'screens/chat_screen.dart';
 /// 启动Flutter应用并初始化根组件
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  
+  try {
+    // 尝试初始化Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase初始化成功');
+  } catch (e) {
+    // Firebase初始化失败时的处理
+    print('Firebase初始化失败: $e');
+    // 继续运行应用，但不使用Firebase功能
+  }
+  
   runApp(const MyApp());
 }
 
@@ -70,7 +80,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     // 在组件初始化完成后初始化认证状态
     // 使用addPostFrameCallback确保在第一帧渲染完成后执行
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthProvider>().initialize();
+      try {
+        context.read<AuthProvider>().initialize();
+      } catch (e) {
+        print('认证初始化失败: $e');
+        // 即使初始化失败，也要确保UI能正常显示
+        setState(() {});
+      }
     });
   }
 
@@ -101,6 +117,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
                       color: Color(0xFF880E4F), // 深粉色
                       fontSize: 16,
                     ),
+                  ),
+                  SizedBox(height: 8),
+                  // 添加调试信息
+                  Text(
+                    '如果长时间停留在此页面，请检查网络连接',
+                    style: TextStyle(
+                      color: Color(0xFF880E4F),
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

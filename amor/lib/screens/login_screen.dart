@@ -202,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ] else ...[
           // 在 Android 上显示提示信息
           const SizedBox(height: 16),
-          // _buildPlatformInfo(),
+          _buildPlatformInfo(),
         ],
       ],
     );

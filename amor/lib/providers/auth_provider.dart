@@ -1,5 +1,7 @@
 // Flutter基础包，提供调试和通知功能
 import 'package:flutter/foundation.dart';
+// 异步操作相关
+import 'dart:async';
 // 用户数据模型
 import '../models/user.dart';
 // 认证服务
@@ -45,18 +47,36 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // 初始化认证服务
-      await _authService.initialize();
-      // 获取当前用户信息（如果有的话）
-      _user = _authService.currentUser;
+      // 添加超时机制，避免无限等待
+      await Future.any([
+        _performInitialization(),
+        Future.delayed(const Duration(seconds: 10), () {
+          throw TimeoutException('初始化超时', const Duration(seconds: 10));
+        }),
+      ]);
     } catch (e) {
       // 记录初始化失败的错误信息
       debugPrint('初始化认证状态失败: $e');
+      // 即使失败也要标记为已初始化，避免无限重试
     } finally {
       // 无论成功失败，都要更新状态
       _isLoading = false;
       _isInitialized = true;
       notifyListeners();
+    }
+  }
+
+  /// 执行实际的初始化操作
+  Future<void> _performInitialization() async {
+    try {
+      // 初始化认证服务
+      await _authService.initialize();
+      // 获取当前用户信息（如果有的话）
+      _user = _authService.currentUser;
+      debugPrint('认证状态初始化成功，用户: ${_user?.email ?? "未登录"}');
+    } catch (e) {
+      debugPrint('认证服务初始化失败: $e');
+      // 不重新抛出异常，让应用继续运行
     }
   }
 
