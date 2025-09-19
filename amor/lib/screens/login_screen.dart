@@ -17,31 +17,42 @@ class _LoginScreenState extends State<LoginScreen> {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F6F0),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Logo和标题
-                  const Spacer(flex: 2),
-                  _buildHeader(),
-                  const SizedBox(height: 60),
-
-                  // 登录按钮
-                  _buildLoginButtons(authProvider),
-                  const SizedBox(height: 24),
-
-                  // 加载指示器
-                  if (authProvider.isLoading) _buildLoadingIndicator(),
-
-                  const Spacer(flex: 3),
-
-                  // 底部说明
-                  _buildFooter(),
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFE91E63), // 深粉色
+                  Color(0xFFF48FB1), // 浅粉色
                 ],
+              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Logo和标题
+                    const Spacer(flex: 2),
+                    _buildHeader(),
+                    const SizedBox(height: 60),
+
+                    // 登录按钮
+                    _buildLoginButtons(authProvider),
+                    const SizedBox(height: 24),
+
+                    // 加载指示器
+                    if (authProvider.isLoading) _buildLoadingIndicator(),
+
+                    const Spacer(flex: 3),
+
+                    // 底部说明
+                    _buildFooter(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -138,52 +149,67 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        // App Logo
+        // App Logo - 使用上传的图片
         Container(
           width: 120,
           height: 120,
           decoration: BoxDecoration(
-            color: const Color(0xFFE91E63),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE91E63).withValues(alpha: 0.3),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: const Icon(Icons.favorite, size: 60, color: Colors.white),
+          child: Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'web/icons/icon-512.png',
+                width: 80,
+                height: 80,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  // 如果图片加载失败，显示默认图标
+                  return const Icon(
+                    Icons.favorite,
+                    size: 60,
+                    color: Color(0xFFE91E63),
+                  );
+                },
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 32),
 
         // 应用名称
         const Text(
-          'Amor',
+          'Amor AI - Smart Health Product\nComparison',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2C3E50),
-            letterSpacing: 2,
+            color: Colors.white,
+            letterSpacing: 1,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 16),
 
         // 副标题
         const Text(
-          '您的AI购物研究助手',
+          'Voice-powered AI assistant helps you find trusted health products,\nsupplements, and wellness items at the best prices. Compare across top\nretailers instantly.',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF7F8C8D),
+            fontSize: 14,
+            color: Colors.white70,
             fontWeight: FontWeight.w400,
+            height: 1.4,
           ),
-        ),
-        const SizedBox(height: 8),
-
-        // 描述
-        const Text(
-          '智能推荐最适合您的商品',
-          style: TextStyle(fontSize: 14, color: Color(0xFF95A5A6)),
         ),
       ],
     );
@@ -199,12 +225,27 @@ class _LoginScreenState extends State<LoginScreen> {
             defaultTargetPlatform == TargetPlatform.macOS) ...[
           const SizedBox(height: 16),
           _buildAppleLoginButton(authProvider),
-        ] else ...[
-          // 在 Android 上显示提示信息
-          const SizedBox(height: 16),
-          _buildPlatformInfo(),
         ],
       ],
+    );
+  }
+
+  Widget _buildTagButton(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
@@ -212,20 +253,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: const Color(0xFF6C757D), size: 20),
+          Icon(Icons.info_outline, color: Colors.white70, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               '苹果登录仅在 iOS 和 macOS 设备上可用',
               style: TextStyle(
                 fontSize: 14,
-                color: const Color(0xFF6C757D),
+                color: Colors.white70,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -238,6 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildGoogleLoginButton(AuthProvider authProvider) {
     return Container(
       height: 56,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
@@ -279,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(width: 16),
             Text(
-              '使用 Google 账户登录',
+              'Sign in with Google',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -297,6 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildAppleLoginButton(AuthProvider authProvider) {
     return Container(
       height: 56,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
@@ -353,13 +396,13 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           SizedBox(height: 16),
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)),
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             strokeWidth: 2,
           ),
           SizedBox(height: 16),
           Text(
             '正在登录...',
-            style: TextStyle(color: Color(0xFF7F8C8D), fontSize: 14),
+            style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
       ),
@@ -370,8 +413,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       children: [
         const Text(
-          '登录即表示您同意我们的',
-          style: TextStyle(fontSize: 12, color: Color(0xFF95A5A6)),
+          'By signing in, you agree to our',
+          style: TextStyle(fontSize: 12, color: Colors.white70),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -386,17 +429,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: const Text(
-                '服务条款',
+                'Terms of Service',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFE91E63),
+                  color: Colors.white,
                   decoration: TextDecoration.underline,
                 ),
               ),
             ),
             const Text(
-              ' 和 ',
-              style: TextStyle(fontSize: 12, color: Color(0xFF95A5A6)),
+              ' and ',
+              style: TextStyle(fontSize: 12, color: Colors.white70),
             ),
             TextButton(
               onPressed: () {
@@ -408,10 +451,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: const Text(
-                '隐私政策',
+                'Privacy Policy',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFE91E63),
+                  color: Colors.white,
                   decoration: TextDecoration.underline,
                 ),
               ),
@@ -421,4 +464,91 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
+}
+
+// 自定义渐变爱心画笔
+class GradientHeartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..shader = const LinearGradient(
+        colors: [
+          Color(0xFFFF6B00), // 橙色
+          Color(0xFFFF1744), // 红色
+          Color(0xFFE91E63), // 粉色
+          Color(0xFF9C27B0), // 紫色
+          Color(0xFF3F51B5), // 蓝色
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 2;
+
+    final path = Path();
+    
+    // 绘制更现代化的爱心形状
+    final width = size.width;
+    final height = size.height;
+    final centerX = width / 2;
+    
+    // 左上圆弧
+    path.addArc(
+      Rect.fromCircle(
+        center: Offset(width * 0.3, height * 0.3),
+        radius: width * 0.25,
+      ),
+      0,
+      3.14159,
+    );
+    
+    // 右上圆弧
+    path.addArc(
+      Rect.fromCircle(
+        center: Offset(width * 0.7, height * 0.3),
+        radius: width * 0.25,
+      ),
+      0,
+      3.14159,
+    );
+    
+    // 连接到底部尖角，使用贝塞尔曲线使形状更圆润
+    path.quadraticBezierTo(
+      width * 0.9, height * 0.6,
+      centerX, height * 0.85,
+    );
+    
+    path.quadraticBezierTo(
+      width * 0.1, height * 0.6,
+      width * 0.05, height * 0.3,
+    );
+    
+    path.close();
+    
+    canvas.drawPath(path, paint);
+    
+    // 添加高光效果
+    final highlightPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.3),
+          Colors.white.withValues(alpha: 0.1),
+          Colors.transparent,
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.center,
+      ).createShader(Rect.fromLTWH(0, 0, size.width * 0.6, size.height * 0.6))
+      ..style = PaintingStyle.fill;
+    
+    final highlightPath = Path();
+    highlightPath.addOval(
+      Rect.fromLTWH(width * 0.15, height * 0.1, width * 0.4, height * 0.4),
+    );
+    
+    canvas.drawPath(highlightPath, highlightPaint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

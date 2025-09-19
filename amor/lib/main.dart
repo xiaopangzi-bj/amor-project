@@ -112,7 +112,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   SizedBox(height: 16),
                   // 加载提示文本
                   Text(
-                    '正在加载...',
+                    'Loading...',
                     style: TextStyle(
                       color: Color(0xFF880E4F), // 深粉色
                       fontSize: 16,
@@ -121,7 +121,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   SizedBox(height: 8),
                   // 添加调试信息
                   Text(
-                    '如果长时间停留在此页面，请检查网络连接',
+                    'If you stay on this page for a long time, please check your network connection',
                     style: TextStyle(
                       color: Color(0xFF880E4F),
                       fontSize: 12,
