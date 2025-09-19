@@ -2,9 +2,6 @@
 import 'package:flutter/material.dart';
 // 状态管理包
 import 'package:provider/provider.dart';
-// Firebase核心包
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 // 认证状态管理
 import 'providers/auth_provider.dart';
 // 登录页面
@@ -16,18 +13,6 @@ import 'screens/chat_screen.dart';
 /// 启动Flutter应用并初始化根组件
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    // 尝试初始化Firebase
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    print('Firebase初始化成功');
-  } catch (e) {
-    // Firebase初始化失败时的处理
-    print('Firebase初始化失败: $e');
-    // 继续运行应用，但不使用Firebase功能
-  }
   
   runApp(const MyApp());
 }

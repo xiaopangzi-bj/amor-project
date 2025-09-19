@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 /// 统一管理不同平台的客户端ID配置
 class OAuthConfig {
   // 开发环境配置
-  static const String _devAndroidClientId = '1093914523334-30d7qoouk2ccc5f7qd9idktk12p9kekl.apps.googleusercontent.com';
-  static const String _devWebClientId = '1093914523334-ju2eu9s1i2snbpn9gq12cpun65k7rvm1.apps.googleusercontent.com';
+  static const String _devAndroidClientId = '163769271002-onpg6180ci63c6oijf3ig3uukq36pnto.apps.googleusercontent.com';
+  static const String _devWebClientId = '163769271002-1eqcqsd72s23g0ujq4vdlvar7ekiu5gi.apps.googleusercontent.com';
   static const String _devIosClientId = '123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com';
   
   // 生产环境配置 (从环境变量或配置文件读取)

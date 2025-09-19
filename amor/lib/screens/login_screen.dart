@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../providers/auth_provider.dart';
 import 'chat_screen.dart';
 
@@ -62,45 +63,73 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _signInWithGoogle(AuthProvider authProvider) async {
+    debugPrint('🚀 [LOGIN DEBUG] Starting Google Sign In process...');
     try {
+      debugPrint('📱 [LOGIN DEBUG] Calling authProvider.signInWithGoogle()');
       final success = await authProvider.signInWithGoogle();
+      debugPrint('✅ [LOGIN DEBUG] Google Sign In result: $success');
+      
       if (success) {
-        // 显示成功提示
-        _showSuccessSnackBar('登录成功！正在跳转...');
-        // 延迟一下再跳转，让用户看到成功提示
-        await Future.delayed(const Duration(milliseconds: 500));
-        _navigateToChat();
+        debugPrint('🎉 [LOGIN DEBUG] Login successful! Showing success message...');
+        // 显示成功提示，但不立即跳转
+        _showSuccessSnackBar('登录成功！');
+        // 延迟更长时间，让用户看到成功状态
+        await Future.delayed(const Duration(milliseconds: 1500));
+        debugPrint('🔄 [LOGIN DEBUG] Login process completed, main.dart will handle navigation...');
+        // 不在这里手动跳转，让main.dart中的Consumer<AuthProvider>自动处理页面切换
       } else {
+        debugPrint('❌ [LOGIN DEBUG] Login failed - user cancelled or error occurred');
         _showErrorDialog('Google登录失败', '登录过程被取消或失败，请重试');
       }
     } catch (e) {
+      debugPrint('💥 [LOGIN DEBUG] Exception during Google Sign In: $e');
+      debugPrint('📋 [LOGIN DEBUG] Exception type: ${e.runtimeType}');
+      
       String errorMessage = '登录失败，请重试';
       
       // 根据错误类型提供更具体的错误信息
       if (e.toString().contains('网络')) {
         errorMessage = '网络连接失败，请检查网络后重试';
+        debugPrint('🌐 [LOGIN DEBUG] Network error detected');
       } else if (e.toString().contains('验证失败')) {
         errorMessage = '身份验证失败，请重试';
+        debugPrint('🔐 [LOGIN DEBUG] Authentication error detected');
       } else if (e.toString().contains('ID Token')) {
         errorMessage = 'Google认证失败，请重试';
+        debugPrint('🎫 [LOGIN DEBUG] ID Token error detected');
       } else if (e.toString().contains('后端')) {
         errorMessage = '服务器验证失败，请稍后重试';
+        debugPrint('🖥️ [LOGIN DEBUG] Backend error detected');
       }
       
+      debugPrint('📝 [LOGIN DEBUG] Final error message: $errorMessage');
       _showErrorDialog('登录失败', errorMessage);
     }
   }
 
   Future<void> _signInWithApple(AuthProvider authProvider) async {
+    debugPrint('🍎 [LOGIN DEBUG] Starting Apple Sign In process...');
     try {
+      debugPrint('📱 [LOGIN DEBUG] Calling authProvider.signInWithApple()');
       final success = await authProvider.signInWithApple();
+      debugPrint('✅ [LOGIN DEBUG] Apple Sign In result: $success');
+      
       if (success) {
-        _navigateToChat();
+        debugPrint('🎉 [LOGIN DEBUG] Apple login successful! Showing success message...');
+        // 显示成功提示，但不立即跳转
+        _showSuccessSnackBar('登录成功！');
+        // 延迟更长时间，让用户看到成功状态
+        await Future.delayed(const Duration(milliseconds: 1500));
+        debugPrint('🔄 [LOGIN DEBUG] Login process completed, main.dart will handle navigation...');
+        // 不在这里手动跳转，让main.dart中的Consumer<AuthProvider>自动处理页面切换
       } else {
+        debugPrint('❌ [LOGIN DEBUG] Apple login failed');
         _showErrorDialog('苹果登录失败', '请重试');
       }
     } catch (e) {
-      _showErrorDialog('登录失败', e.toString());
+      debugPrint('💥 [LOGIN DEBUG] Exception during Apple Sign In: $e');
+      debugPrint('📋 [LOGIN DEBUG] Exception type: ${e.runtimeType}');
+      _showErrorDialog('苹果登录失败', '登录过程中出现错误，请重试');
     }
   }
 
@@ -149,37 +178,78 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        // App Logo - 使用上传的图片
+        // App Logo - 使用新设计的SVG logo
         Container(
-          width: 120,
-          height: 120,
+          width: 140,
+          height: 140,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(35),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: const Color(0xFFFF6B6B).withValues(alpha: 0.2),
+                blurRadius: 25,
+                offset: const Offset(0, 8),
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.8),
+                blurRadius: 15,
+                offset: const Offset(0, -4),
+                spreadRadius: 1,
               ),
             ],
           ),
-          child: Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'web/icons/icon-512.png',
-                width: 80,
-                height: 80,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  // 如果图片加载失败，显示默认图标
-                  return const Icon(
-                    Icons.favorite,
-                    size: 60,
-                    color: Color(0xFFE91E63),
-                  );
-                },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(35),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.95),
+                    Colors.white.withValues(alpha: 0.85),
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    // 如果图片加载失败，显示优化的默认图标
+                    return Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFFF6B6B),
+                            Color(0xFFFF8E8E),
+                            Color(0xFFFFB6B6),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.favorite_rounded,
+                        size: 45,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

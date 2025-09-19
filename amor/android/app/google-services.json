@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "amor-app-example",
-    "storage_bucket": "amor-app-example.appspot.com"
+    "project_number": "163769271002",
+    "project_id": "amor-7463d",
+    "storage_bucket": "amor-7463d.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890",
+        "mobilesdk_app_id": "1:163769271002:android:3b52fe5b437ee9ab241be3",
         "android_client_info": {
           "package_name": "com.example.amor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1093914523334-30d7qoouk2ccc5f7qd9idktk12p9kekl.apps.googleusercontent.com",
+          "client_id": "163769271002-onpg6180ci63c6oijf3ig3uukq36pnto.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.amor",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "1093914523334-30d7qoouk2ccc5f7qd9idktk12p9kekl.apps.googleusercontent.com",
+          "client_id": "163769271002-1eqcqsd72s23g0ujq4vdlvar7ekiu5gi.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz1234567"
+          "current_key": "AIzaSyCdJz9JBqDBz529H73PLFBiIOJeH7iO23M"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1093914523334-30d7qoouk2ccc5f7qd9idktk12p9kekl.apps.googleusercontent.com",
+              "client_id": "163769271002-1eqcqsd72s23g0ujq4vdlvar7ekiu5gi.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
