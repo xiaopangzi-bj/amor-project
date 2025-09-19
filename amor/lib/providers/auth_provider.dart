@@ -64,6 +64,9 @@ class AuthProvider with ChangeNotifier {
   /// 调用认证服务进行Google登录，成功后更新用户状态
   /// @return 登录是否成功
   Future<bool> signInWithGoogle() async {
+    // 注意：Flutter Web在所有桌面平台（Windows、Linux、macOS）上都支持Google登录
+    // 因为它运行在浏览器环境中，而不是作为原生桌面应用
+    
     // 设置加载状态
     _isLoading = true;
     notifyListeners();

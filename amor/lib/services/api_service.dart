@@ -11,7 +11,7 @@ class ApiService {
   ApiService._internal();
 
   // 后端API基础URL - 请根据实际情况修改
-  static const String _baseUrl = 'https://your-backend-api.com/api';
+  static const String _baseUrl = 'http://192.168.100.39:8080';
   
   // HTTP客户端
   final http.Client _client = http.Client();
@@ -50,7 +50,7 @@ class ApiService {
   Future<Map<String, dynamic>> verifyGoogleToken(String idToken) async {
     try {
       final response = await _client.post(
-        Uri.parse('$_baseUrl/auth/google'),
+        Uri.parse('$_baseUrl/login'),
         headers: _headers,
         body: jsonEncode({
           'id_token': idToken,

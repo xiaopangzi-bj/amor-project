@@ -84,22 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final success = await authProvider.signInWithApple();
       if (success) {
-        _showSuccessSnackBar('登录成功！正在跳转...');
-        await Future.delayed(const Duration(milliseconds: 500));
         _navigateToChat();
       } else {
-        _showErrorDialog('Apple登录失败', '登录过程被取消或失败，请重试');
+        _showErrorDialog('苹果登录失败', '请重试');
       }
     } catch (e) {
-      String errorMessage = '登录失败，请重试';
-      
-      if (e.toString().contains('网络')) {
-        errorMessage = '网络连接失败，请检查网络后重试';
-      } else if (e.toString().contains('验证失败')) {
-        errorMessage = '身份验证失败，请重试';
-      }
-      
-      _showErrorDialog('登录失败', errorMessage);
+      _showErrorDialog('登录失败', e.toString());
     }
   }
 
@@ -168,23 +158,13 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 32),
 
         // 应用名称
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xFFE91E63), // 深粉色
-              Color(0xFFFF6B9D), // 亮粉色
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: const Text(
-            'Amor',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white, // 这个颜色会被渐变覆盖
-              letterSpacing: 2,
-            ),
+        const Text(
+          'Amor',
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C3E50),
+            letterSpacing: 2,
           ),
         ),
         const SizedBox(height: 16),
