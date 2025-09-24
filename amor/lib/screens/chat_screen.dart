@@ -4,10 +4,12 @@ import '../models/chat_message.dart';
 import '../models/product.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/message_bubble.dart';
+import '../widgets/loading_message_bubble.dart';
 import '../widgets/product_filter_widget.dart';
 import '../widgets/research_widget.dart';
 import '../widgets/product_recommendation_widget.dart';
 import '../widgets/chat_input.dart';
+import 'login_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -30,6 +32,21 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     // 添加欢迎消息
     _addWelcomeMessage();
+    
+    // 确保AuthProvider已经初始化
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (!authProvider.isInitialized) {
+        debugPrint('🔧 [CHAT DEBUG] AuthProvider未初始化，开始初始化...');
+        authProvider.initialize().then((_) {
+          debugPrint('✅ [CHAT DEBUG] AuthProvider初始化完成');
+        }).catchError((error) {
+          debugPrint('❌ [CHAT DEBUG] AuthProvider初始化失败: $error');
+        });
+      } else {
+        debugPrint('✅ [CHAT DEBUG] AuthProvider已经初始化');
+      }
+    });
   }
 
   @override
@@ -322,116 +339,7 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
     _addWelcomeMessage();
   }
 
-  void _showUserMenu() {
-    final authProvider = context.read<AuthProvider>();
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 用户信息
-            if (authProvider.user != null) ...[
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: authProvider.user!.photoUrl != null
-                    ? NetworkImage(authProvider.user!.photoUrl!)
-                    : null,
-                child: authProvider.user!.photoUrl == null
-                    ? const Icon(Icons.person, size: 30)
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                authProvider.user!.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                authProvider.user!.email,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-            
-            // 登出按钮
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text(
-                '登出',
-                style: TextStyle(color: Colors.red),
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                try {
-                  // 显示登出确认对话框
-                  final shouldLogout = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('确认登出'),
-                      content: const Text('您确定要登出吗？'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('取消'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('确认'),
-                        ),
-                      ],
-                    ),
-                  );
-                  
-                  if (shouldLogout == true) {
-                    // 执行登出操作
-                    await authProvider.signOut();
-                    
-                    // 显示登出成功提示
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('已成功登出'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  }
-                } catch (e) {
-                  // 显示登出失败提示
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('登出失败: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-            
-            // 取消按钮
-            ListTile(
-              leading: const Icon(Icons.cancel),
-              title: const Text('取消'),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -454,13 +362,65 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: _clearChat,
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: _showUserMenu,
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, child) {
+              // 添加调试信息
+              debugPrint('🔍 [CHAT DEBUG] AuthProvider状态: isLoggedIn=${authProvider.isLoggedIn}, isInitialized=${authProvider.isInitialized}, user=${authProvider.user?.email ?? 'null'}');
+              
+              if (authProvider.isLoggedIn && authProvider.user != null) {
+                // 已登录：显示刷新按钮和退出按钮
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.refresh, color: Colors.white),
+                      tooltip: '清空聊天记录',
+                      onPressed: _clearChat,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      tooltip: '退出登录',
+                      onPressed: () async {
+                        debugPrint('🚪 [CHAT DEBUG] 点击退出登录');
+                        await authProvider.signOut();
+                      },
+                    ),
+                  ],
+                );
+              } else {
+                // 未登录：显示Google G图标
+                return IconButton(
+                  icon: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'G',
+                        style: TextStyle(
+                          color: Color(0xFF4285F4),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  tooltip: '使用Google账号登录',
+                  onPressed: () {
+                    debugPrint('🚀 [CHAT DEBUG] 点击登录按钮，跳转到登录页面');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
           ),
         ],
       ),
@@ -476,14 +436,10 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
                   final message = _messages[index];
                   return _buildMessage(message);
                 } else {
-                  // 显示加载指示器
+                  // 显示loading消息气泡
                   return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)),
-                      ),
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: LoadingMessageBubble(),
                   );
                 }
               },

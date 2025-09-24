@@ -48,6 +48,9 @@ dependencies:
   
   # SVG support
   flutter_svg: ^2.0.10+1
+  
+  # Permissions
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

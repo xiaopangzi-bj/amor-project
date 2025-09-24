@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../models/chat_message.dart';
 
 /// 消息气泡组件
@@ -33,15 +34,22 @@ class MessageBubble extends StatelessWidget {
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // AI消息显示机器人头像（左侧）
+          // AI消息显示小狗头像（左侧）
           if (!message.isUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: const Color(0xFFE91E63), // 粉色背景
-              child: const Icon(
-                Icons.smart_toy, // 机器人图标
-                color: Colors.white,
-                size: 16,
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE91E63), // 粉色背景
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: SvgPicture.asset(
+                  'assets/dog_avatar.svg',
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(width: 8), // 头像与消息间距

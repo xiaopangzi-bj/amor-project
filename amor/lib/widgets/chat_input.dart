@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:permission_handler/permission_handler.dart';
 
 /// 聊天输入组件
 /// 提供文本输入框和发送按钮，支持加载状态显示
@@ -32,6 +33,9 @@ class _ChatInputState extends State<ChatInput> {
 
   /// 焦点节点，用于管理输入框的焦点状态
   final FocusNode _focusNode = FocusNode();
+
+  /// 麦克风是否正在录音
+  bool _isRecording = false;
 
   /// 初始化组件
   /// 在组件构建完成后自动获取焦点
@@ -67,6 +71,40 @@ class _ChatInputState extends State<ChatInput> {
           _focusNode.requestFocus();
         }
       });
+    }
+  }
+
+  /// 处理麦克风按钮点击
+  /// 请求麦克风权限并开始/停止录音
+  Future<void> _handleMicrophonePress() async {
+    if (_isRecording) {
+      // 停止录音
+      setState(() {
+        _isRecording = false;
+      });
+      // 这里可以添加停止录音的逻辑
+      debugPrint('🎤 停止录音');
+    } else {
+      // 请求麦克风权限
+      final permission = await Permission.microphone.request();
+      if (permission.isGranted) {
+        // 开始录音
+        setState(() {
+          _isRecording = true;
+        });
+        // 这里可以添加开始录音的逻辑
+        debugPrint('🎤 开始录音');
+      } else {
+        // 权限被拒绝
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('需要麦克风权限才能使用语音功能'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -116,6 +154,24 @@ class _ChatInputState extends State<ChatInput> {
               ),
             ),
             const SizedBox(width: 12), // 输入框与按钮间距
+            // 麦克风按钮
+            GestureDetector(
+              onTap: widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
+              child: Container(
+                width: 48,
+                height: 48,
+                child: Icon(
+                  // 录音时显示停止图标，正常时显示麦克风图标
+                  _isRecording ? Icons.stop : Icons.mic,
+                  // 录音时红色，正常时使用发送按钮的粉色
+                  color: _isRecording
+                      ? Colors.red
+                      : const Color(0xFFE91E63),
+                  size: 24,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8), // 麦克风与发送按钮间距
             // 发送按钮
             GestureDetector(
               onTap: widget.isLoading ? null : _sendMessage, // 加载时禁用点击

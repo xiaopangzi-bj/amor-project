@@ -119,12 +119,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
           );
         }
 
-        // 根据用户登录状态显示相应页面
-        if (authProvider.isLoggedIn) {
-          return const ChatScreen(); // 已登录：显示聊天页面
-        } else {
-          return const LoginScreen(); // 未登录：显示登录页面
-        }
+        // 默认进入聊天页面，不强制登录
+        return const ChatScreen();
       },
     );
   }
