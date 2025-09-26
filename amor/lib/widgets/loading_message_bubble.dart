@@ -114,7 +114,7 @@ class _LoadingMessageBubbleState extends State<LoadingMessageBubble>
                 children: [
                   // 思考文字
                   Text(
-                    '正在思考',
+                    'Thinking',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                       fontSize: 16,
