@@ -33,14 +33,28 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           // 使用Material Design 3主题
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFFE91E63), // 主色调：粉色系
+            seedColor: HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor主色调：315° 65% 75%
             brightness: Brightness.light, // 亮色主题
           ),
           useMaterial3: true, // 启用Material Design 3
-          // 自定义粉色系配色
-          primarySwatch: Colors.pink,
-          primaryColor: const Color(0xFFE91E63),
-          scaffoldBackgroundColor: const Color(0xFFFCE4EC),
+          // Amor配色方案
+          primarySwatch: MaterialColor(
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor().value,
+            <int, Color>{
+              50: HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(), // 非常浅
+              100: HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(), // 浅
+              200: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(), // 较浅
+              300: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // 中浅
+              400: HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // 主色
+              500: HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // 中深
+              600: HSLColor.fromAHSL(1.0, 315, 0.65, 0.65).toColor(), // 较深
+              700: HSLColor.fromAHSL(1.0, 315, 0.65, 0.60).toColor(), // 深
+              800: HSLColor.fromAHSL(1.0, 315, 0.65, 0.55).toColor(), // 很深
+              900: HSLColor.fromAHSL(1.0, 315, 0.65, 0.50).toColor(), // 最深
+            },
+          ),
+          primaryColor: HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(),
+          scaffoldBackgroundColor: HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // 非常浅的背景
         ),
         home: const AuthWrapper(), // 设置首页为认证包装器
       ),
@@ -82,33 +96,33 @@ class _AuthWrapperState extends State<AuthWrapper> {
       builder: (context, authProvider, child) {
         // 如果认证状态还在初始化或正在加载，显示加载页面
         if (!authProvider.isInitialized || authProvider.isLoading) {
-          return const Scaffold(
-            backgroundColor: Color(0xFFFCE4EC), // 粉色系背景
+          return Scaffold(
+            backgroundColor: HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // Amor浅背景色
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 加载指示器，使用粉色系主色调
+                  // 加载指示器，使用Amor主色调
                   CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFE91E63),
+                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor主色
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // 加载提示文本
                   Text(
                     'Loading...',
                     style: TextStyle(
-                      color: Color(0xFF880E4F), // 深粉色
+                      color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // Amor深色调
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   // 添加调试信息
                   Text(
                     'If you stay on this page for a long time, please check your network connection',
                     style: TextStyle(
-                      color: Color(0xFF880E4F),
+                      color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // Amor深色调
                       fontSize: 12,
                     ),
                     textAlign: TextAlign.center,

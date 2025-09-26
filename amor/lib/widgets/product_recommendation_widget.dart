@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
 
@@ -44,9 +45,26 @@ class ProductRecommendationWidget extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(
+                  color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.50).toColor(),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -74,13 +92,24 @@ class ProductRecommendationWidget extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFE5E5), // 浅红色背景
+              gradient: LinearGradient(
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(),
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(),
+                width: 1,
+              ),
             ),
             child: Text(
               '飞行员夹克', // 产品类别标签
               style: TextStyle(
-                color: const Color(0xFFE91E63), // 粉色文字
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(), // 深紫色文字
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -125,13 +154,24 @@ class ProductRecommendationWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -205,8 +245,19 @@ class ProductRecommendationWidget extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100, // 浅灰色背景
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -231,10 +282,10 @@ class ProductRecommendationWidget extends StatelessWidget {
           Text(
             text, // 来源文本
             style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade700,
-              fontWeight: FontWeight.w500,
-            ),
+                fontSize: 12,
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
+                fontWeight: FontWeight.w500,
+              ),
           ),
         ],
       ),
@@ -247,13 +298,24 @@ class ProductRecommendationWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -377,13 +439,24 @@ class ProductRecommendationWidget extends StatelessWidget {
   Widget _buildProductCard(Product product) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -395,8 +468,19 @@ class ProductRecommendationWidget extends StatelessWidget {
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey.shade200, // 浅灰色背景
+              gradient: LinearGradient(
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.88).toColor(),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              border: Border.all(
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                width: 1,
+              ),
             ),
             child: Center(
               child: Column(
@@ -497,14 +581,25 @@ class ProductRecommendationWidget extends StatelessWidget {
                   children: product.features.map((feature) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100, // 浅灰色背景
+                      gradient: LinearGradient(
+                        colors: [
+                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(),
+                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       feature, // 特性文本
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade700,
+                        color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                       ),
                     ),
                   )).toList(),
@@ -523,13 +618,24 @@ class ProductRecommendationWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -571,9 +677,23 @@ class ProductRecommendationWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1), // 半透明背景
+          gradient: LinearGradient(
+            colors: [
+              color.withOpacity(0.15),
+              color.withOpacity(0.08),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3)), // 半透明边框
+          border: Border.all(color: color.withOpacity(0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -607,13 +727,24 @@ class ProductRecommendationWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          colors: [
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -639,15 +770,15 @@ class ProductRecommendationWidget extends StatelessWidget {
                   child: Text(
                     topic, // 话题文本
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                    ),
+                    fontSize: 14,
+                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
+                  ),
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios, // 箭头指示器
                   size: 12,
-                  color: Colors.grey.shade400,
+                  color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.60).toColor(),
                 ),
               ],
             ),

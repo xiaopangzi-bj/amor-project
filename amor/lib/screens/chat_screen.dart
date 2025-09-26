@@ -30,21 +30,21 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // 添加欢迎消息
+    // Add welcome message
     _addWelcomeMessage();
     
-    // 确保AuthProvider已经初始化
+    // Ensure AuthProvider is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       if (!authProvider.isInitialized) {
-        debugPrint('🔧 [CHAT DEBUG] AuthProvider未初始化，开始初始化...');
+        debugPrint('🔧 [CHAT DEBUG] AuthProvider not initialized, starting initialization...');
         authProvider.initialize().then((_) {
-          debugPrint('✅ [CHAT DEBUG] AuthProvider初始化完成');
+          debugPrint('✅ [CHAT DEBUG] AuthProvider initialization completed');
         }).catchError((error) {
-          debugPrint('❌ [CHAT DEBUG] AuthProvider初始化失败: $error');
+          debugPrint('❌ [CHAT DEBUG] AuthProvider initialization failed: $error');
         });
       } else {
-        debugPrint('✅ [CHAT DEBUG] AuthProvider已经初始化');
+        debugPrint('✅ [CHAT DEBUG] AuthProvider already initialized');
       }
     });
   }
@@ -58,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _addWelcomeMessage() {
     _messages.add(ChatMessage(
       id: 'welcome',
-      content: '您好，我是您的AI购物研究助手！我可以帮您找到最适合的商品。请告诉我您想购买什么？',
+      content: 'Hello!  Amor here — your friendly shopping robot.  How can I help you today?',
       isUser: false,
       timestamp: DateTime.now(),
     ));
@@ -87,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _isLoading = true;
     });
 
-    // 模拟后端响应
+    // Simulate backend response
     Future.delayed(const Duration(seconds: 1), () {
       _handleUserMessage(content);
     });
@@ -108,23 +108,23 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentFilters = [
         ProductFilter(
           id: '1',
-          title: '夹克',
-          description: '轻便、时尚，适合日常穿着或春秋季节',
+          title: 'Jacket',
+          description: 'Lightweight and stylish, suitable for daily wear or spring/autumn seasons',
         ),
         ProductFilter(
           id: '2',
-          title: '大衣',
-          description: '保暖、正式，适合秋冬季节或商务场合',
+          title: 'Coat',
+          description: 'Warm and formal, suitable for autumn/winter seasons or business occasions',
         ),
         ProductFilter(
           id: '3',
-          title: '羽绒服',
-          description: '极致保暖，适合寒冷天气或冬季运动',
+          title: 'Down Jacket',
+          description: 'Ultimate warmth, suitable for cold weather or winter sports',
         ),
         ProductFilter(
           id: '4',
-          title: '风衣',
-          description: '防风、防雨，适合多变天气或旅行',
+          title: 'Windbreaker',
+          description: 'Wind and rain resistant, suitable for variable weather or travel',
         ),
       ];
       _isLoading = false;
@@ -132,7 +132,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     final responseMessage = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: '您想找哪种类型的外套？请从列表中选择一个选项，或者输入您要找的。',
+      content: 'What type of outerwear are you looking for? Please select an option from the list, or type what you\'re looking for.',
       isUser: false,
       timestamp: DateTime.now(),
       type: MessageType.productFilter,
@@ -148,28 +148,28 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentFilters = [
         ProductFilter(
           id: '1',
-          title: '飞行员夹克',
-          description: '经典款式，通常有罗纹袖口和下摆，适合休闲和运动风格',
+          title: 'Bomber Jacket',
+          description: 'Classic style with ribbed cuffs and hem, suitable for casual and sporty looks',
         ),
         ProductFilter(
           id: '2',
-          title: '牛仔夹克',
-          description: '耐用且百搭，适合日常穿着，可搭配多种服装',
+          title: 'Denim Jacket',
+          description: 'Durable and versatile, suitable for daily wear and pairs with various outfits',
         ),
         ProductFilter(
           id: '3',
-          title: '皮夹克',
-          description: '时尚且具有保护性，适合骑行或打造硬朗造型',
+          title: 'Leather Jacket',
+          description: 'Stylish and protective, suitable for riding or creating a tough look',
         ),
         ProductFilter(
           id: '4',
-          title: '羽绒夹克',
-          description: '轻便保暖，填充羽绒或合成材料，适合寒冷天气',
+          title: 'Puffer Jacket',
+          description: 'Lightweight and warm, filled with down or synthetic materials, suitable for cold weather',
         ),
         ProductFilter(
           id: '5',
-          title: '风衣',
-          description: '轻薄防风，通常有防水功能，适合春秋季节或户外活动',
+          title: 'Windbreaker',
+          description: 'Lightweight and windproof, usually with waterproof features, suitable for spring/autumn or outdoor activities',
         ),
       ];
       _isLoading = false;
@@ -177,7 +177,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     final responseMessage = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: '您想找哪种类型的夹克？请从列表中选择一个选项，或者输入您要查找的内容。',
+      content: 'What type of jacket are you looking for? Please select an option from the list, or type what you want to search for.',
       isUser: false,
       timestamp: DateTime.now(),
       type: MessageType.productFilter,
@@ -191,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _handleGeneralRequest(String content) {
     final responseMessage = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: '我是您的AI购物研究助手，可以帮助您找到最适合的商品。请告诉我您想购买什么？',
+      content: 'I\'m your AI shopping research assistant, and I can help you find the most suitable products. Please tell me what you want to buy?',
       isUser: false,
       timestamp: DateTime.now(),
     );
@@ -215,31 +215,31 @@ class _ChatScreenState extends State<ChatScreen> {
       _researchSteps = [
         ResearchStep(
           id: '1',
-          title: '评估顶级${filter.title}...',
+          title: 'Evaluating top ${filter.title}...',
           isCompleted: true,
           isActive: false,
         ),
         ResearchStep(
           id: '2',
-          title: '分析顶级${filter.title}品牌...',
+          title: 'Analyzing top ${filter.title} brands...',
           isCompleted: true,
           isActive: false,
         ),
         ResearchStep(
           id: '3',
-          title: '比较不同材质的${filter.title}...',
+          title: 'Comparing different ${filter.title} materials...',
           isCompleted: true,
           isActive: false,
         ),
         ResearchStep(
           id: '4',
-          title: '评估保暖性和季节适用性...',
+          title: 'Evaluating warmth and seasonal suitability...',
           isCompleted: true,
           isActive: false,
         ),
         ResearchStep(
           id: '5',
-          title: '研究款式和剪裁...',
+          title: 'Researching styles and cuts...',
           isCompleted: true,
           isActive: false,
         ),
@@ -264,7 +264,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(researchMessage);
     });
 
-    // 模拟研究完成
+    // Simulate research completion
     Future.delayed(const Duration(seconds: 2), () {
       _simulateRecommendations(filter);
     });
@@ -273,14 +273,14 @@ class _ChatScreenState extends State<ChatScreen> {
   void _simulateRecommendations(ProductFilter filter) {
     setState(() {
       _vettedAnalysis = '''
-${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪裁。像"Cockpit USA G-1"和"Cockpit USA A-2"这样的型号因其历史意义和在电影中的出现（如"Top Gun"）而备受推崇。Cockpit USA在美国制造并提供定制服务。客户评价："真正永恒且实用"的羊皮A-2夹克。"Cockpit USA A-2"被认为是"第一件飞行员夹克"。r/malefashionadvice论坛用户和Cockpit USA为美国军方提供产品。
+${filter.title} is a classic fashion item for men, emphasizing material, warmth, and cut. Models like "Cockpit USA G-1" and "Cockpit USA A-2" are highly regarded for their historical significance and appearances in movies (such as "Top Gun"). Cockpit USA is made in the USA and offers custom services. Customer reviews: "truly timeless and practical" sheepskin A-2 jacket. "Cockpit USA A-2" is considered "the first pilot jacket". r/malefashionadvice forum users and Cockpit USA supply products to the U.S. military.
       ''';
 
       _recommendedProducts = [
         Product(
           id: '1',
-          name: 'Cockpit USA G-1 飞行夹克',
-          description: '这款夹克适合追求历史真实性和经典军事风格的爱好者，其优质皮革和毛皮村里提供卓越的保护和舒适度。',
+          name: 'Cockpit USA G-1 Flight Jacket',
+          description: 'This jacket is suitable for enthusiasts seeking historical authenticity and classic military style, with premium leather and fur collar providing exceptional protection and comfort.',
           imageUrl: 'https://via.placeholder.com/300x400/8B4513/FFFFFF?text=G-1+Jacket',
           rating: 4.6,
           reviewCount: 6,
@@ -288,14 +288,14 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
             PriceInfo(store: 'Bradshawforbes', price: 640, currency: '\$'),
             PriceInfo(store: 'Uswings', price: 650, currency: '\$'),
           ],
-          features: ['经典款式', '优质皮革', '毛皮领子', '美国制造'],
-          category: '最佳经典款',
+          features: ['Classic style', 'Premium leather', 'Fur collar', 'Made in USA'],
+          category: 'Best Classic',
           brand: 'Cockpit USA',
         ),
         Product(
           id: '2',
-          name: 'Cockpit USA A-2 飞行夹克',
-          description: '对于那些欣赏传统军事服装和美国制造品质的人来说，这款夹克是理想选择，它提供了永恒的风格和定制的可能性。',
+          name: 'Cockpit USA A-2 Flight Jacket',
+          description: 'Ideal for those who appreciate traditional military clothing and American-made quality, this jacket offers timeless style and customization possibilities.',
           imageUrl: 'https://via.placeholder.com/300x400/654321/FFFFFF?text=A-2+Jacket',
           rating: 4.0,
           reviewCount: 307,
@@ -303,8 +303,8 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
             PriceInfo(store: 'Mypilotstore', price: 645, currency: '\$'),
             PriceInfo(store: 'Cockpitusa', price: 0, currency: '\$'),
           ],
-          features: ['复刻款式', '定制服务', '军事风格', '美国制造'],
-          category: '最佳复刻款',
+          features: ['Replica style', 'Custom service', 'Military style', 'Made in USA'],
+          category: 'Best Replica',
           brand: 'Cockpit USA',
         ),
       ];
@@ -312,19 +312,16 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
       _isLoading = false;
     });
 
-    final analysisMessage = ChatMessage(
+    final summaryMessage = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: _vettedAnalysis!,
+      content: 'Based on my research, I found the following ${filter.title} recommendations for you:',
       isUser: false,
       timestamp: DateTime.now(),
-      type: MessageType.productRecommendation,
-      data: {
-        'analysis': _vettedAnalysis,
-        'products': _recommendedProducts.map((p) => p.toJson()).toList(),
-      },
+      type: MessageType.recommendation,
+      data: {'products': _recommendedProducts.map((p) => p.toJson()).toList()},
     );
     setState(() {
-      _messages.add(analysisMessage);
+      _messages.add(summaryMessage);
     });
   }
 
@@ -348,108 +345,144 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFCE4EC), // 粉色系背景
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFE91E63), // 粉色系AppBar
-        elevation: 0,
-        title: const Text(
-          'Amor',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // Very light Amor color
+              HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(), // Light Amor color
+              HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(), // Lighter Amor color
+            ],
+            stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        centerTitle: true,
-        actions: [
-          Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              // 添加调试信息
-              debugPrint('🔍 [CHAT DEBUG] AuthProvider状态: isLoggedIn=${authProvider.isLoggedIn}, isInitialized=${authProvider.isInitialized}, user=${authProvider.user?.email ?? 'null'}');
-              
-              if (authProvider.isLoggedIn && authProvider.user != null) {
-                // 已登录：显示刷新按钮和退出按钮
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh, color: Colors.white),
-                      tooltip: '清空聊天记录',
-                      onPressed: _clearChat,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      tooltip: '退出登录',
-                      onPressed: () async {
-                        debugPrint('🚪 [CHAT DEBUG] 点击退出登录');
-                        await authProvider.signOut();
-                      },
-                    ),
+        child: Column(
+          children: [
+            // App bar - using Amor primary color gradient
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // Medium light Amor color
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor primary color
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // Medium dark Amor color
                   ],
-                );
-              } else {
-                // 未登录：显示Google G图标
-                return IconButton(
-                  icon: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'G',
-                        style: TextStyle(
-                          color: Color(0xFF4285F4),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  tooltip: '使用Google账号登录',
-                  onPressed: () {
-                    debugPrint('🚀 [CHAT DEBUG] 点击登录按钮，跳转到登录页面');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _messages.length) {
-                  final message = _messages[index];
-                  return _buildMessage(message);
-                } else {
-                  // 显示loading消息气泡
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: LoadingMessageBubble(),
-                  );
-                }
-              },
+                ],
+              ),
+              child: AppBar(
+                backgroundColor: Colors.transparent, // Transparent background to show gradient
+                elevation: 0, // Remove default shadow
+                foregroundColor: Colors.white, // White text and icons
+                title: const Text(
+                  'Amor',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                centerTitle: true,
+                actions: [
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, child) {
+                      // Add debug information
+                      debugPrint('🔍 [CHAT DEBUG] AuthProvider status: isLoggedIn=${authProvider.isLoggedIn}, isInitialized=${authProvider.isInitialized}, user=${authProvider.user?.email ?? 'null'}');
+                      
+                      if (authProvider.isLoggedIn && authProvider.user != null) {
+                        // Logged in: show refresh and sign out buttons
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.refresh, color: Colors.white),
+                              tooltip: 'Clear chat history',
+                              onPressed: _clearChat,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.logout, color: Colors.white),
+                              tooltip: 'Sign out',
+                              onPressed: () async {
+                                debugPrint('🚪 [CHAT DEBUG] Clicked sign out');
+                                await authProvider.signOut();
+                              },
+                            ),
+                          ],
+                        );
+                      } else {
+                        // Not logged in: show Google G icon
+                        return IconButton(
+                          icon: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'G',
+                                style: TextStyle(
+                                  color: Color(0xFF4285F4),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          tooltip: 'Sign in with Google account',
+                          onPressed: () {
+                            debugPrint('🚀 [CHAT DEBUG] Clicked login button, navigating to login page');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          ChatInput(
-            onSendMessage: _sendMessage,
-            isLoading: _isLoading,
-          ),
-        ],
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: _messages.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < _messages.length) {
+                    final message = _messages[index];
+                    return _buildMessage(message);
+                  } else {
+                    // Show loading message bubble
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: LoadingMessageBubble(),
+                    );
+                  }
+                },
+              ),
+            ),
+            ChatInput(
+              onSendMessage: _sendMessage,
+              isLoading: _isLoading,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -463,8 +496,8 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
           onSkip: () {
             _selectFilter(ProductFilter(
               id: 'general',
-              title: '通用推荐',
-              description: '为您推荐的热门商品',
+              title: 'General Recommendations',
+              description: 'Popular products recommended for you',
             ));
           },
         );
@@ -485,8 +518,8 @@ ${filter.title}是男士的经典时尚单品，强调材质、保暖性和剪�
           onTap: () {
             _selectFilter(ProductFilter(
               id: 'general',
-              title: '通用推荐',
-              description: '为您推荐的热门商品',
+              title: 'General Recommendations',
+              description: 'Popular products recommended for you',
             ));
           },
         );

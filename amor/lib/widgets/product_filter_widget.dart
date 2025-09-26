@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
 
@@ -30,9 +31,26 @@ class ProductFilterWidget extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(
+                  color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.50).toColor(),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -73,16 +91,27 @@ class ProductFilterWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                gradient: LinearGradient(
+                  colors: [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
+                ],
+              ),
                   child: Text(
                     message.content,
                     style: const TextStyle(
@@ -108,11 +137,22 @@ class ProductFilterWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    gradient: LinearGradient(
+                      colors: [
+                        HSLColor.fromAHSL(1.0, 315, 0.65, 0.97).toColor(),
+                        HSLColor.fromAHSL(1.0, 315, 0.65, 0.93).toColor(),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                      width: 1,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.50).toColor(),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

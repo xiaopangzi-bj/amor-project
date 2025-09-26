@@ -51,8 +51,24 @@ class _LoadingMessageBubbleState extends State<LoadingMessageBubble>
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFFE91E63), // 粉色背景
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // 中浅Amor色
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor主色
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // 中深Amor色
+                ],
+                stops: const [0.0, 0.5, 1.0],
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: HSLColor.fromAHSL(0.3, 315, 0.65, 0.75).toColor(),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: ClipOval(
               child: SvgPicture.asset(
@@ -70,24 +86,37 @@ class _LoadingMessageBubbleState extends State<LoadingMessageBubble>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white, // 白色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // 非常浅的Amor色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(), // 浅Amor色
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.60).toColor(),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
                 ],
+                border: Border.all(
+                  color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.75).toColor(),
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // 思考文字
-                  const Text(
+                  Text(
                     '正在思考',
                     style: TextStyle(
-                      color: Colors.black87,
+                      color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                       fontSize: 16,
                       height: 1.4,
                     ),

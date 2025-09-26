@@ -118,7 +118,7 @@ class _ChatInputState extends State<ChatInput> {
         color: Colors.white, // 白色背景
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, -2), // 向上的阴影效果
           ),
@@ -132,17 +132,41 @@ class _ChatInputState extends State<ChatInput> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100, // 浅灰色背景
-                  borderRadius: BorderRadius.circular(24), // 圆角边框
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // 非常浅的Amor色
+                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(), // 浅Amor色
+                      Colors.white, // 白色
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.60).toColor(),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.75).toColor(),
+                    width: 1,
+                  ),
                 ),
                 child: TextField(
                   controller: _controller, // 绑定文本控制器
                   focusNode: _focusNode, // 绑定焦点节点
                   enabled: !widget.isLoading, // 加载时禁用输入
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: '输入您的消息...', // 提示文本
+                    hintStyle: TextStyle(
+                      color: HSLColor.fromAHSL(0.6, 315, 0.65, 0.75).toColor(),
+                      fontSize: 14,
+                    ),
                     border: InputBorder.none, // 无边框
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
@@ -150,6 +174,10 @@ class _ChatInputState extends State<ChatInput> {
                   maxLines: null, // 支持多行输入
                   textInputAction: TextInputAction.send, // 键盘显示发送按钮
                   onSubmitted: (_) => _sendMessage(), // 键盘发送时触发
+                  style: TextStyle(
+                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(), // 深Amor色文字
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),
@@ -173,38 +201,62 @@ class _ChatInputState extends State<ChatInput> {
             ),
             const SizedBox(width: 8), // 麦克风与发送按钮间距
             // 发送按钮
-            GestureDetector(
-              onTap: widget.isLoading ? null : _sendMessage, // 加载时禁用点击
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  // 加载时灰色，正常时粉色
-                  color: widget.isLoading
-                      ? Colors.grey.shade300
-                      : const Color(0xFFE91E63),
-                  shape: BoxShape.circle, // 圆形按钮
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: widget.isLoading
+                      ? [
+                          Colors.grey.shade300,
+                          Colors.grey.shade400,
+                          Colors.grey.shade500,
+                        ]
+                      : [
+                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // 中浅Amor色
+                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor主色
+                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // 中深Amor色
+                        ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
-                child: widget.isLoading
-                    ? const Center(
-                        // 加载状态显示进度指示器
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: (widget.isLoading
+                            ? Colors.grey.withOpacity(0.3)
+                            : HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor())
+                        .withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(25),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(25),
+                  onTap: widget.isLoading ? null : _sendMessage,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: widget.isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
+                          )
+                        : const Icon(
+                            Icons.send,
+                            color: Colors.white,
+                            size: 20,
                           ),
-                        ),
-                      )
-                    : const Icon(
-                        // 正常状态显示发送图标
-                        Icons.send,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                  ),
+                ),
               ),
             ),
           ],

@@ -25,82 +25,95 @@ class MessageBubble extends StatelessWidget {
   /// 根据消息类型（用户/AI）显示不同的布局和样式
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8), // 垂直间距
-      child: Row(
-        // 用户消息右对齐，AI消息左对齐
-        mainAxisAlignment: message.isUser 
-            ? MainAxisAlignment.end 
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // AI消息显示小狗头像（左侧）
-          if (!message.isUser) ...[
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE91E63), // 粉色背景
-                shape: BoxShape.circle,
-              ),
-              child: ClipOval(
-                child: SvgPicture.asset(
-                  'assets/dog_avatar.svg',
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8), // 头像与消息间距
-          ],
-          // 消息内容容器
-          Flexible(
-            child: GestureDetector(
-              onTap: onTap, // 点击事件处理
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  // 用户消息红色背景，AI消息白色背景
-                  color: message.isUser 
-                      ? const Color(0xFFE91E63)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(20), // 圆角气泡
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2), // 阴影效果
-                    ),
+    final isUser = message.isUser;
+    
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isUser
+                ? [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // 用户消息：中浅Amor色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // 用户消息：Amor主色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // 用户消息：中深Amor色
+                  ]
+                : [
+                    Colors.white, // 机器人消息：白色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // 机器人消息：非常浅的Amor色
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(), // 机器人消息：浅Amor色
                   ],
-                ),
-                child: Text(
-                  message.content, // 消息文本内容
-                  style: TextStyle(
-                    // 用户消息白色文字，AI消息深色文字
-                    color: message.isUser ? Colors.white : Colors.black87,
-                    fontSize: 16,
-                    height: 1.4, // 行高
-                  ),
-                ),
+            stops: const [0.0, 0.5, 1.0],
+          ),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: isUser ? const Radius.circular(16) : const Radius.circular(4),
+            bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(16),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: (isUser
+                      ? HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor()
+                      : Colors.grey)
+                  .withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          border: Border.all(
+            color: isUser
+                ? HSLColor.fromAHSL(0.3, 315, 0.65, 0.75).toColor()
+                : HSLColor.fromAHSL(0.2, 315, 0.65, 0.75).toColor(),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 消息内容
+            Text(
+              message.content,
+              style: TextStyle(
+                color: isUser ? Colors.white : HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
+                fontSize: 14,
+                height: 1.4,
               ),
             ),
-          ),
-          // 用户消息显示用户头像（右侧）
-          if (message.isUser) ...[
-            const SizedBox(width: 8), // 消息与头像间距
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: const Color(0xFF4ECDC4), // 青色背景
-              child: const Icon(
-                Icons.person, // 用户图标
-                color: Colors.white,
-                size: 16,
+            const SizedBox(height: 4),
+            // 时间戳
+            Text(
+              _formatTime(message.timestamp),
+              style: TextStyle(
+                color: isUser
+                    ? Colors.white.withOpacity(0.7)
+                    : HSLColor.fromAHSL(0.6, 315, 0.65, 0.75).toColor(),
+                fontSize: 10,
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
+  }
+
+  /// 格式化时间戳为可读字符串
+  String _formatTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}天前';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}小时前';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}分钟前';
+    } else {
+      return '刚刚';
+    }
   }
 }

@@ -30,13 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           extendBodyBehindAppBar: true,
           body: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFE91E63), // 深粉色
-                  Color(0xFFF48FB1), // 浅粉色
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // 深粉色
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // 浅粉色
                 ],
               ),
             ),
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(35),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFF6B6B).withValues(alpha: 0.2),
+                color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.55).toColor(),
                 blurRadius: 25,
                 offset: const Offset(0, 8),
                 spreadRadius: 2,
@@ -235,19 +235,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Color(0xFFFF6B6B),
-                            Color(0xFFFF8E8E),
-                            Color(0xFFFFB6B6),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.65).toColor(),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
+                            color: HSLColor.fromAHSL(0.3, 315, 0.65, 0.65).toColor(),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -315,9 +315,23 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.25),
+            Colors.white.withValues(alpha: 0.15),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+        boxShadow: [
+          BoxShadow(
+            color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.50).toColor(),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Text(
         text,
@@ -334,9 +348,23 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.08),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: HSLColor.fromAHSL(0.08, 315, 0.65, 0.50).toColor(),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -365,7 +393,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.30).toColor(),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -425,7 +453,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.30).toColor(),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -552,13 +580,13 @@ class GradientHeartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..shader = const LinearGradient(
+      ..shader = LinearGradient(
         colors: [
-          Color(0xFFFF6B00), // 橙色
-          Color(0xFFFF1744), // 红色
-          Color(0xFFE91E63), // 粉色
-          Color(0xFF9C27B0), // 紫色
-          Color(0xFF3F51B5), // 蓝色
+          HSLColor.fromAHSL(1.0, 25, 1.0, 0.55).toColor(),  // 橙色
+          HSLColor.fromAHSL(1.0, 345, 1.0, 0.55).toColor(), // 红色
+          HSLColor.fromAHSL(1.0, 315, 0.65, 0.55).toColor(), // 粉色
+          HSLColor.fromAHSL(1.0, 285, 0.65, 0.45).toColor(), // 紫色
+          HSLColor.fromAHSL(1.0, 245, 0.65, 0.45).toColor(), // 蓝色
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

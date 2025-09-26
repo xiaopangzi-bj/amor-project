@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
 
@@ -28,9 +29,26 @@ class ResearchWidget extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(
+                  color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.50).toColor(),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -38,7 +56,7 @@ class ResearchWidget extends StatelessWidget {
                   Text(
                     '跳过并显示所有推荐',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                       fontSize: 14,
                     ),
                   ),
@@ -58,13 +76,24 @@ class ResearchWidget extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFE5E5),
+              gradient: LinearGradient(
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.90).toColor(),
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(),
+                width: 1,
+              ),
             ),
             child: Text(
               '飞行员夹克',
               style: TextStyle(
-                color: const Color(0xFFE91E63),
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -75,13 +104,24 @@ class ResearchWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              gradient: LinearGradient(
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
                   blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -108,14 +148,25 @@ class ResearchWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        gradient: LinearGradient(
+                          colors: [
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         '${researchSteps.length} SOURCES',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -149,11 +200,24 @@ class ResearchWidget extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: step.isCompleted 
-                  ? const Color(0xFF4CAF50)
-                  : step.isActive
-                      ? const Color(0xFFFFD700)
-                      : Colors.grey.shade300,
+              gradient: LinearGradient(
+                colors: step.isCompleted
+                    ? [
+                        HSLColor.fromAHSL(1.0, 120, 0.60, 0.45).toColor(),
+                        HSLColor.fromAHSL(1.0, 120, 0.60, 0.50).toColor(),
+                      ]
+                    : step.isActive
+                        ? [
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                          ]
+                        : [
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+                            HSLColor.fromAHSL(1.0, 315, 0.65, 0.88).toColor(),
+                          ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
             ),
             child: step.isCompleted
@@ -177,10 +241,10 @@ class ResearchWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 color: step.isCompleted 
-                    ? Colors.black87
+                    ? HSLColor.fromAHSL(1.0, 315, 0.65, 0.25).toColor()
                     : step.isActive
-                        ? const Color(0xFFFFD700)
-                        : Colors.grey.shade600,
+                        ? HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor()
+                        : HSLColor.fromAHSL(1.0, 315, 0.65, 0.50).toColor(),
                 fontWeight: step.isActive ? FontWeight.w500 : FontWeight.normal,
               ),
             ),
@@ -188,7 +252,7 @@ class ResearchWidget extends StatelessWidget {
           Icon(
             Icons.arrow_forward_ios,
             size: 12,
-            color: Colors.grey.shade400,
+            color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.60).toColor(),
           ),
         ],
       ),
@@ -211,8 +275,19 @@ class ResearchWidget extends StatelessWidget {
             margin: const EdgeInsets.only(right: 8),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              gradient: LinearGradient(
+                colors: [
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(),
+                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
+                width: 1,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -237,7 +312,7 @@ class ResearchWidget extends StatelessWidget {
                   source,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade700,
+                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -247,7 +322,7 @@ class ResearchWidget extends StatelessWidget {
           Icon(
             Icons.arrow_forward_ios,
             size: 12,
-            color: Colors.grey.shade400,
+            color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.60).toColor(),
           ),
         ],
       ),
