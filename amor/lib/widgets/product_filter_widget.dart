@@ -56,7 +56,7 @@ class ProductFilterWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '跳过并显示所有推荐',
+                    'Skip and show all recommendations',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,

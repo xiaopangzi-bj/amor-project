@@ -54,7 +54,7 @@ class ResearchWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '跳过并显示所有推荐',
+                    'Skip and show all recommendations',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                       fontSize: 14,
@@ -91,7 +91,7 @@ class ResearchWidget extends StatelessWidget {
               ),
             ),
             child: Text(
-              '飞行员夹克',
+              'Pilot Jacket',
               style: TextStyle(
                 color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(),
                 fontSize: 14,

@@ -94,9 +94,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _handleUserMessage(String content) {
-    if (content.contains('外套') || content.contains('夹克')) {
+    if (content.contains('coat') || content.contains('jacket')) {
       _handleProductCategoryRequest(content);
-    } else if (content.contains('飞行员') || content.contains('牛仔') || content.contains('皮夹克')) {
+    } else if (content.contains('bomber') || content.contains('denim') || content.contains('leather')) {
       _handleProductTypeRequest(content);
     } else {
       _handleGeneralRequest(content);
@@ -317,7 +317,7 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
       content: 'Based on my research, I found the following ${filter.title} recommendations for you:',
       isUser: false,
       timestamp: DateTime.now(),
-      type: MessageType.recommendation,
+      type: MessageType.productRecommendation,
       data: {'products': _recommendedProducts.map((p) => p.toJson()).toList()},
     );
     setState(() {

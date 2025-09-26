@@ -70,7 +70,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '跳过并显示所有推荐',
+                    'Skip and show all recommendations',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
@@ -107,7 +107,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               ),
             ),
             child: Text(
-              '飞行员夹克', // 产品类别标签
+              'Pilot Jacket', // 产品类别标签
               style: TextStyle(
                 color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(), // 深紫色文字
                 fontSize: 14,
@@ -719,9 +719,9 @@ class ProductRecommendationWidget extends StatelessWidget {
     // 相关话题列表
     final topics = [
       'Compare Vetted Picks',
-      '最受欢迎的飞行员夹克品牌推荐',
-      '如何根据身材选择合适的飞行员夹克',
-      '飞行员夹克常见材质优缺点对比',
+      'Most Popular Pilot Jacket Brand Recommendations',
+      'How to Choose the Right Pilot Jacket for Your Body Type',
+      'Pros and Cons of Common Pilot Jacket Materials',
     ];
 
     return Container(
