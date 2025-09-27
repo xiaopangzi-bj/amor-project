@@ -82,39 +82,39 @@ class _LoginScreenState extends State<LoginScreen> {
       
       if (success) {
         debugPrint('🎉 [LOGIN DEBUG] Login successful! Showing success message...');
-        // 显示成功提示，但不立即跳转
-        _showSuccessSnackBar('登录成功！');
-        // 延迟更长时间，让用户看到成功状态
+        // Show success message, don't navigate immediately
+        _showSuccessSnackBar('Login successful!');
+        // Delay longer to let user see success state
         await Future.delayed(const Duration(milliseconds: 1500));
         debugPrint('🔄 [LOGIN DEBUG] Login process completed, main.dart will handle navigation...');
         // 不在这里手动跳转，让main.dart中的Consumer<AuthProvider>自动处理页面切换
       } else {
         debugPrint('❌ [LOGIN DEBUG] Login failed - user cancelled or error occurred');
-        _showErrorDialog('Google登录失败', '登录过程被取消或失败，请重试');
+        _showErrorDialog('Google Login Failed', 'Login process was cancelled or failed, please try again');
       }
     } catch (e) {
       debugPrint('💥 [LOGIN DEBUG] Exception during Google Sign In: $e');
       debugPrint('📋 [LOGIN DEBUG] Exception type: ${e.runtimeType}');
       
-      String errorMessage = '登录失败，请重试';
+      String errorMessage = 'Login failed, please try again';
       
-      // 根据错误类型提供更具体的错误信息
-      if (e.toString().contains('网络')) {
-        errorMessage = '网络连接失败，请检查网络后重试';
+      // Provide more specific error messages based on error type
+      if (e.toString().contains('network')) {
+        errorMessage = 'Network connection failed, please check network and try again';
         debugPrint('🌐 [LOGIN DEBUG] Network error detected');
-      } else if (e.toString().contains('验证失败')) {
-        errorMessage = '身份验证失败，请重试';
+      } else if (e.toString().contains('authentication')) {
+        errorMessage = 'Authentication failed, please try again';
         debugPrint('🔐 [LOGIN DEBUG] Authentication error detected');
       } else if (e.toString().contains('ID Token')) {
-        errorMessage = 'Google认证失败，请重试';
+        errorMessage = 'Google authentication failed, please try again';
         debugPrint('🎫 [LOGIN DEBUG] ID Token error detected');
-      } else if (e.toString().contains('后端')) {
-        errorMessage = '服务器验证失败，请稍后重试';
+      } else if (e.toString().contains('backend')) {
+        errorMessage = 'Server verification failed, please try again later';
         debugPrint('🖥️ [LOGIN DEBUG] Backend error detected');
       }
       
       debugPrint('📝 [LOGIN DEBUG] Final error message: $errorMessage');
-      _showErrorDialog('登录失败', errorMessage);
+      _showErrorDialog('Login Failed', errorMessage);
     }
   }
 
@@ -127,20 +127,20 @@ class _LoginScreenState extends State<LoginScreen> {
       
       if (success) {
         debugPrint('🎉 [LOGIN DEBUG] Apple login successful! Showing success message...');
-        // 显示成功提示，但不立即跳转
-        _showSuccessSnackBar('登录成功！');
-        // 延迟更长时间，让用户看到成功状态
+        // Show success message, don't navigate immediately
+        _showSuccessSnackBar('Login successful!');
+        // Delay longer to let user see success state
         await Future.delayed(const Duration(milliseconds: 1500));
         debugPrint('🔄 [LOGIN DEBUG] Login process completed, main.dart will handle navigation...');
-        // 不在这里手动跳转，让main.dart中的Consumer<AuthProvider>自动处理页面切换
+        // Don't navigate manually here, let Consumer<AuthProvider> in main.dart handle page switching
       } else {
         debugPrint('❌ [LOGIN DEBUG] Apple login failed');
-        _showErrorDialog('苹果登录失败', '请重试');
+        _showErrorDialog('Apple Login Failed', 'Please try again');
       }
     } catch (e) {
       debugPrint('💥 [LOGIN DEBUG] Exception during Apple Sign In: $e');
       debugPrint('📋 [LOGIN DEBUG] Exception type: ${e.runtimeType}');
-      _showErrorDialog('苹果登录失败', '登录过程中出现错误，请重试');
+      _showErrorDialog('Apple Login Failed', 'An error occurred during login, please try again');
     }
   }
 
@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('确定'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -371,15 +371,15 @@ class _LoginScreenState extends State<LoginScreen> {
           Icon(Icons.info_outline, color: Colors.white70, size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              '苹果登录仅在 iOS 和 macOS 设备上可用',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
-                fontWeight: FontWeight.w400,
+              child: Text(
+                'Apple login is only available on iOS and macOS devices',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -486,7 +486,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(width: 16),
             Text(
-              '使用 Apple 账户登录',
+              'Sign in with Apple',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -510,7 +510,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            '正在登录...',
+            'Logging in...',
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
