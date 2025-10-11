@@ -31,13 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           extendBodyBehindAppBar: true,
           body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
                 colors: [
-                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // 深粉色
-                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // 浅粉色
+                  Color(0xFFE91E63), // 鲜艳的粉红色
+                  Color(0xFF9C27B0), // 鲜艳的紫色
                 ],
               ),
             ),
