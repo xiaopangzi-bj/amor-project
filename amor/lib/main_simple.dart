@@ -46,38 +46,38 @@ class SimpleTestScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFE91E63),
         foregroundColor: Colors.white,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.favorite,
               size: 80,
               color: Color(0xFFE91E63),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               '应用正常运行！',
               style: TextStyle(
                 fontSize: FontConfig.getCurrentFontSizes().inputText + 8,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF880E4F),
+                color: const Color(0xFF880E4F),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               '如果你能看到这个页面，说明Flutter应用基本功能正常',
               style: TextStyle(
                 fontSize: FontConfig.getCurrentFontSizes().inputText,
-                color: Color(0xFF880E4F),
+                color: const Color(0xFF880E4F),
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Card(
-              margin: EdgeInsets.all(20),
+              margin: const EdgeInsets.all(20),
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
                     Text(
@@ -85,15 +85,15 @@ class SimpleTestScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: FontConfig.getCurrentFontSizes().inputText + 2,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF880E4F),
+                        color: const Color(0xFF880E4F),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       '• UI渲染正常\n• 主题配置正确\n• 基本组件工作正常',
                       style: TextStyle(
                         fontSize: FontConfig.getCurrentFontSizes().messageText,
-                        color: Color(0xFF880E4F),
+                        color: const Color(0xFF880E4F),
                       ),
                     ),
                   ],
