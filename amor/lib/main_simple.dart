@@ -1,5 +1,7 @@
 // Flutter核心包
 import 'package:flutter/material.dart';
+// 字体配置
+import 'config/font_config.dart';
 
 /// 简单测试版本的应用程序入口点
 /// 用于测试基本UI是否能正常显示
@@ -57,7 +59,7 @@ class SimpleTestScreen extends StatelessWidget {
             Text(
               '应用正常运行！',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: FontConfig.getCurrentFontSizes().inputText + 8,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF880E4F),
               ),
@@ -66,7 +68,7 @@ class SimpleTestScreen extends StatelessWidget {
             Text(
               '如果你能看到这个页面，说明Flutter应用基本功能正常',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: FontConfig.getCurrentFontSizes().inputText,
                 color: Color(0xFF880E4F),
               ),
               textAlign: TextAlign.center,
@@ -81,7 +83,7 @@ class SimpleTestScreen extends StatelessWidget {
                     Text(
                       '测试信息',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: FontConfig.getCurrentFontSizes().inputText + 2,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF880E4F),
                       ),
@@ -90,7 +92,7 @@ class SimpleTestScreen extends StatelessWidget {
                     Text(
                       '• UI渲染正常\n• 主题配置正确\n• 基本组件工作正常',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: FontConfig.getCurrentFontSizes().messageText,
                         color: Color(0xFF880E4F),
                       ),
                     ),

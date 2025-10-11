@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
+import '../config/font_config.dart';
 
 class ProductFilterWidget extends StatelessWidget {
   final ChatMessage message;
@@ -59,7 +60,7 @@ class ProductFilterWidget extends StatelessWidget {
                     'Skip and show all recommendations',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 14,
+                      fontSize: FontConfig.getCurrentFontSizes().messageText,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -114,9 +115,9 @@ class ProductFilterWidget extends StatelessWidget {
               ),
                   child: Text(
                     message.content,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 16,
+                      fontSize: FontConfig.getCurrentFontSizes().inputText,
                       height: 1.4,
                     ),
                   ),
@@ -166,8 +167,8 @@ class ProductFilterWidget extends StatelessWidget {
                           children: [
                             Text(
                               filter.title,
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: TextStyle(
+                                fontSize: FontConfig.getCurrentFontSizes().inputText,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black87,
                               ),
@@ -176,7 +177,7 @@ class ProductFilterWidget extends StatelessWidget {
                             Text(
                               filter.description,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: FontConfig.getCurrentFontSizes().messageText,
                                 color: Colors.grey.shade600,
                                 height: 1.3,
                               ),

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../providers/auth_provider.dart';
+import '../config/font_config.dart';
 import 'chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -268,11 +269,11 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 32),
 
         // 应用名称
-        const Text(
+        Text(
           'Amor AI - Smart Health Product\nComparison',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 28,
+            fontSize: FontConfig.getCurrentFontSizes().inputText + 12,
             fontWeight: FontWeight.bold,
             color: Colors.white,
             letterSpacing: 1,
@@ -282,11 +283,11 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 16),
 
         // 副标题
-        const Text(
+        Text(
           'Voice-powered AI assistant helps you find trusted health products,\nsupplements, and wellness items at the best prices. Compare across top\nretailers instantly.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: FontConfig.getCurrentFontSizes().messageText,
             color: Colors.white70,
             fontWeight: FontWeight.w400,
             height: 1.4,
@@ -335,9 +336,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 12,
+          fontSize: FontConfig.getCurrentFontSizes().timestamp,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -374,7 +375,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text(
                 'Apple login is only available on iOS and macOS devices',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: FontConfig.getCurrentFontSizes().messageText,
                   color: Colors.white70,
                   fontWeight: FontWeight.w400,
                 ),
@@ -432,7 +433,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text(
               'Sign in with Google',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: FontConfig.getCurrentFontSizes().inputText,
                 fontWeight: FontWeight.w600,
                 color: authProvider.isLoading
                     ? Colors.grey
@@ -488,7 +489,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text(
               'Sign in with Apple',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: FontConfig.getCurrentFontSizes().inputText,
                 fontWeight: FontWeight.w600,
                 color: authProvider.isLoading ? Colors.grey : Colors.white,
               ),
@@ -500,7 +501,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(
+    return Center(
       child: Column(
         children: [
           SizedBox(height: 16),
@@ -511,7 +512,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 16),
           Text(
             'Logging in...',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(color: Colors.white70, fontSize: FontConfig.getCurrentFontSizes().messageText),
           ),
         ],
       ),
@@ -521,9 +522,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildFooter() {
     return Column(
       children: [
-        const Text(
+        Text(
           'By signing in, you agree to our',
-          style: TextStyle(fontSize: 12, color: Colors.white70),
+          style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().timestamp, color: Colors.white70),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -537,18 +538,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
+              child: Text(
                 'Terms of Service',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: FontConfig.getCurrentFontSizes().timestamp,
                   color: Colors.white,
                   decoration: TextDecoration.underline,
                 ),
               ),
             ),
-            const Text(
+            Text(
               ' and ',
-              style: TextStyle(fontSize: 12, color: Colors.white70),
+              style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().timestamp, color: Colors.white70),
             ),
             TextButton(
               onPressed: () {
@@ -559,10 +560,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
+              child: Text(
                 'Privacy Policy',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: FontConfig.getCurrentFontSizes().timestamp,
                   color: Colors.white,
                   decoration: TextDecoration.underline,
                 ),

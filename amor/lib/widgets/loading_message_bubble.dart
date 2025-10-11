@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../config/font_config.dart';
 
 /// Loading消息气泡组件
 /// 用于显示AI正在思考时的动画效果，包含动画小狗头像和打字效果
@@ -117,7 +118,7 @@ class _LoadingMessageBubbleState extends State<LoadingMessageBubble>
                     'Thinking',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
-                      fontSize: 16,
+                      fontSize: FontConfig.getCurrentFontSizes().inputText,
                       height: 1.4,
                     ),
                   ),
@@ -135,9 +136,9 @@ class _LoadingMessageBubbleState extends State<LoadingMessageBubble>
                         width: 20,
                         child: Text(
                           dots,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFFE91E63),
-                            fontSize: 20,
+                            fontSize: FontConfig.getCurrentFontSizes().inputText + 4,
                             fontWeight: FontWeight.bold,
                             height: 1.0,
                           ),

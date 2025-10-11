@@ -8,6 +8,8 @@ import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
 // 聊天页面
 import 'screens/chat_screen.dart';
+// 字体配置
+import 'config/font_config.dart';
 
 /// 应用程序入口点
 /// 启动Flutter应用并初始化根组件
@@ -114,7 +116,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     'Loading...',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // Amor深色调
-                      fontSize: 16,
+                      fontSize: FontConfig.getCurrentFontSizes().inputText,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -123,7 +125,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     'If you stay on this page for a long time, please check your network connection',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.45).toColor(), // Amor深色调
-                      fontSize: 12,
+                      fontSize: FontConfig.getCurrentFontSizes().timestamp,
                     ),
                     textAlign: TextAlign.center,
                   ),

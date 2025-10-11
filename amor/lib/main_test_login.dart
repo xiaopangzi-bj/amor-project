@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'config/font_config.dart';
 
 void main() {
   runApp(MyApp());
@@ -128,7 +129,7 @@ class _LoginTestPageState extends State<LoginTestPage> {
             Text(
               'Google登录功能测试',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: FontConfig.getCurrentFontSizes().inputText + 8,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -141,7 +142,7 @@ class _LoginTestPageState extends State<LoginTestPage> {
               ),
               child: Text(
                 _status,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().inputText),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -171,14 +172,14 @@ class _LoginTestPageState extends State<LoginTestPage> {
                     )
                   : Text(
                       '测试Google登录',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().inputText + 2),
                     ),
             ),
             SizedBox(height: 20),
             Text(
               '这个测试版本会显示详细的登录过程和错误信息',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: FontConfig.getCurrentFontSizes().timestamp,
                 color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,

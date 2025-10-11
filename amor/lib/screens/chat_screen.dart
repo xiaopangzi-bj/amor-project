@@ -9,6 +9,7 @@ import '../widgets/product_filter_widget.dart';
 import '../widgets/research_widget.dart';
 import '../widgets/product_recommendation_widget.dart';
 import '../widgets/chat_input.dart';
+import '../config/font_config.dart';
 import 'login_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -351,11 +352,9 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // Very light Amor color
-              HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(), // Light Amor color
-              HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(), // Lighter Amor color
+              HSLColor.fromAHSL(1.0, 350, 0.75, 0.55).toColor(), // --amor-red: 350 75% 55%
+              HSLColor.fromAHSL(1.0, 280, 0.55, 0.65).toColor(), // --amor-purple: 280 55% 65%
             ],
-            stops: const [0.0, 0.5, 1.0],
           ),
         ),
         child: Column(
@@ -364,14 +363,12 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                   colors: [
-                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // Medium light Amor color
-                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor primary color
-                    HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // Medium dark Amor color
+                    Color(0xFFE91E63), // 鲜艳的粉红色
+                    Color(0xFF9C27B0), // 鲜艳的紫色
                   ],
-                  stops: const [0.0, 0.5, 1.0],
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -385,11 +382,11 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
                 backgroundColor: Colors.transparent, // Transparent background to show gradient
                 elevation: 0, // Remove default shadow
                 foregroundColor: Colors.white, // White text and icons
-                title: const Text(
+                title: Text(
                   'Amor',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: FontConfig.getCurrentFontSizes().messageText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -430,12 +427,12 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 'G',
                                 style: TextStyle(
                                   color: Color(0xFF4285F4),
-                                  fontSize: 16,
+                                  fontSize: FontConfig.getCurrentFontSizes().inputText,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

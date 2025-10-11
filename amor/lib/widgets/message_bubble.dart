@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/chat_message.dart';
+import '../config/font_config.dart';
 
 /// 消息气泡组件
 /// 用于在聊天界面中显示单条消息，支持用户消息和AI回复的不同样式
@@ -80,7 +81,7 @@ class MessageBubble extends StatelessWidget {
               message.content,
               style: TextStyle(
                 color: isUser ? Colors.white : HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
-                fontSize: 14,
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 height: 1.4,
               ),
             ),
@@ -92,7 +93,7 @@ class MessageBubble extends StatelessWidget {
                 color: isUser
                     ? Colors.white.withOpacity(0.7)
                     : HSLColor.fromAHSL(0.6, 315, 0.65, 0.75).toColor(),
-                fontSize: 10,
+                fontSize: FontConfig.getCurrentFontSizes().timestamp,
               ),
             ),
           ],
@@ -107,13 +108,13 @@ class MessageBubble extends StatelessWidget {
     final difference = now.difference(timestamp);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}天前';
+      return '${difference.inDays} days ago';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}小时前';
+      return '${difference.inHours} hours ago';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}分钟前';
+      return '${difference.inMinutes} minutes ago';
     } else {
-      return '刚刚';
+      return 'Just now';
     }
   }
 }

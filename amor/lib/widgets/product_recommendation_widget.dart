@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
+import '../config/font_config.dart';
 
 /// 产品推荐组件
 /// 显示AI分析结果、产品推荐、品牌轮播、反馈收集等完整的推荐界面
@@ -73,7 +74,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                     'Skip and show all recommendations',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 14,
+                      fontSize: FontConfig.getCurrentFontSizes().messageText,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -110,7 +111,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               'Pilot Jacket', // 产品类别标签
               style: TextStyle(
                 color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(), // 深紫色文字
-                fontSize: 14,
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -186,10 +187,10 @@ class ProductRecommendationWidget extends StatelessWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Research', // 研究标题
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: FontConfig.getCurrentFontSizes().messageText,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -201,10 +202,10 @@ class ProductRecommendationWidget extends StatelessWidget {
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   '25 SOURCES', // 数据来源数量标签
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: FontConfig.getCurrentFontSizes().timestamp,
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
                   ),
@@ -282,7 +283,7 @@ class ProductRecommendationWidget extends StatelessWidget {
           Text(
             text, // 来源文本
             style: TextStyle(
-                fontSize: 12,
+                fontSize: FontConfig.getCurrentFontSizes().timestamp,
                 color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                 fontWeight: FontWeight.w500,
               ),
@@ -330,10 +331,10 @@ class ProductRecommendationWidget extends StatelessWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Vetted Analysis', // 审核分析标题
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: FontConfig.getCurrentFontSizes().messageText,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -345,8 +346,8 @@ class ProductRecommendationWidget extends StatelessWidget {
           
           Text(
             analysis, // 显示AI分析文本
-            style: const TextStyle(
-              fontSize: 14,
+            style: TextStyle(
+              fontSize: FontConfig.getCurrentFontSizes().messageText,
               color: Colors.black87,
               height: 1.5, // 行高设置
             ),
@@ -393,7 +394,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               Text(
                 brand['name']!,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: FontConfig.getCurrentFontSizes().timestamp,
                   color: Colors.grey.shade700,
                   fontWeight: FontWeight.w500,
                 ),
@@ -418,8 +419,8 @@ class ProductRecommendationWidget extends StatelessWidget {
             // 产品类别标题
             Text(
               product.category,
-              style: const TextStyle(
-                fontSize: 18,
+              style: TextStyle(
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -496,7 +497,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                     product.name, // 产品名称
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 16,
+                      fontSize: FontConfig.getCurrentFontSizes().inputText,
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,
@@ -514,8 +515,8 @@ class ProductRecommendationWidget extends StatelessWidget {
                 // 产品标题
                 Text(
                   product.name,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: FontConfig.getCurrentFontSizes().inputText,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
@@ -527,7 +528,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                 Text(
                   product.description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: FontConfig.getCurrentFontSizes().messageText,
                     color: Colors.grey.shade600,
                     height: 1.4, // 行高设置
                   ),
@@ -547,7 +548,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                     Text(
                       '${product.rating} (${product.reviewCount})', // 评分和评论数
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: FontConfig.getCurrentFontSizes().messageText,
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.w500,
                       ),
@@ -563,8 +564,8 @@ class ProductRecommendationWidget extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       '${price.store} ${price.currency}${price.price.toInt()}', // 商店名称和价格
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: FontConfig.getCurrentFontSizes().messageText,
                         color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
@@ -598,7 +599,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                     child: Text(
                       feature, // 特性文本
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: FontConfig.getCurrentFontSizes().timestamp,
                         color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                       ),
                     ),
@@ -642,10 +643,10 @@ class ProductRecommendationWidget extends StatelessWidget {
       child: Column(
         children: [
           // 反馈标题
-          const Text(
+          Text(
             'Was this helpful?',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: FontConfig.getCurrentFontSizes().inputText,
               fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
@@ -704,6 +705,7 @@ class ProductRecommendationWidget extends StatelessWidget {
               text, // 按钮文本
               style: TextStyle(
                 color: color,
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -752,10 +754,10 @@ class ProductRecommendationWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 相关话题标题
-          const Text(
+          Text(
             'Related Topics',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: FontConfig.getCurrentFontSizes().inputText,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
@@ -770,7 +772,7 @@ class ProductRecommendationWidget extends StatelessWidget {
                   child: Text(
                     topic, // 话题文本
                     style: TextStyle(
-                    fontSize: 14,
+                    fontSize: FontConfig.getCurrentFontSizes().messageText,
                     color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                   ),
                   ),

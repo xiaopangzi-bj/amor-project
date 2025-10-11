@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import '../models/chat_message.dart';
 import '../models/product.dart';
+import '../config/font_config.dart';
 
 class ResearchWidget extends StatelessWidget {
   final ChatMessage message;
@@ -57,7 +58,7 @@ class ResearchWidget extends StatelessWidget {
                     'Skip and show all recommendations',
                     style: TextStyle(
                       color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
-                      fontSize: 14,
+                      fontSize: FontConfig.getCurrentFontSizes().messageText,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -94,7 +95,7 @@ class ResearchWidget extends StatelessWidget {
               'Pilot Jacket',
               style: TextStyle(
                 color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.30).toColor(),
-                fontSize: 14,
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -136,10 +137,10 @@ class ResearchWidget extends StatelessWidget {
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Research',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: FontConfig.getCurrentFontSizes().messageText,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
@@ -165,7 +166,7 @@ class ResearchWidget extends StatelessWidget {
                       child: Text(
                         '${researchSteps.length} SOURCES',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: FontConfig.getCurrentFontSizes().timestamp,
                           color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(),
                           fontWeight: FontWeight.w500,
                         ),
@@ -239,7 +240,7 @@ class ResearchWidget extends StatelessWidget {
             child: Text(
               step.title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: FontConfig.getCurrentFontSizes().messageText,
                 color: step.isCompleted 
                     ? HSLColor.fromAHSL(1.0, 315, 0.65, 0.25).toColor()
                     : step.isActive
@@ -311,7 +312,7 @@ class ResearchWidget extends StatelessWidget {
                 Text(
                   source,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: FontConfig.getCurrentFontSizes().timestamp,
                     color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
                     fontWeight: FontWeight.w500,
                   ),

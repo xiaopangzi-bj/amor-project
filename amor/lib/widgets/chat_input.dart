@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
+import '../config/font_config.dart';
 
 /// 聊天输入组件
 /// 提供文本输入框和发送按钮，支持加载状态显示
@@ -27,7 +29,7 @@ class ChatInput extends StatefulWidget {
 
 /// ChatInput组件的状态类
 /// 管理文本输入控制器、焦点节点和消息发送逻辑
-class _ChatInputState extends State<ChatInput> {
+class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMixin {
   /// 文本输入控制器，用于管理输入框的文本内容
   final TextEditingController _controller = TextEditingController();
 
@@ -37,11 +39,30 @@ class _ChatInputState extends State<ChatInput> {
   /// 麦克风是否正在录音
   bool _isRecording = false;
 
+  /// 动画控制器，用于录音时的脉冲效果
+  late AnimationController _animationController;
+  late Animation<double> _pulseAnimation;
+
   /// 初始化组件
   /// 在组件构建完成后自动获取焦点
   @override
   void initState() {
     super.initState();
+    
+    // 初始化动画控制器
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    // 创建脉冲动画
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    
     // 延迟获取焦点，确保组件完全构建完成
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
@@ -52,6 +73,7 @@ class _ChatInputState extends State<ChatInput> {
   /// 在组件销毁时清理控制器和焦点节点，防止内存泄漏
   @override
   void dispose() {
+    _animationController.dispose(); // 释放动画控制器
     _controller.dispose(); // 释放文本控制器
     _focusNode.dispose(); // 释放焦点节点
     super.dispose();
@@ -77,11 +99,16 @@ class _ChatInputState extends State<ChatInput> {
   /// 处理麦克风按钮点击
   /// 请求麦克风权限并开始/停止录音
   Future<void> _handleMicrophonePress() async {
+    // 添加触觉反馈
+    HapticFeedback.lightImpact();
+    
     if (_isRecording) {
       // 停止录音
       setState(() {
         _isRecording = false;
       });
+      // 停止动画
+      _animationController.stop();
       // 这里可以添加停止录音的逻辑
       debugPrint('🎤 停止录音');
     } else {
@@ -92,6 +119,8 @@ class _ChatInputState extends State<ChatInput> {
         setState(() {
           _isRecording = true;
         });
+        // 开始动画
+        _animationController.repeat(reverse: true);
         // 这里可以添加开始录音的逻辑
         debugPrint('🎤 开始录音');
       } else {
@@ -160,10 +189,10 @@ class _ChatInputState extends State<ChatInput> {
                   focusNode: _focusNode, // 绑定焦点节点
                   enabled: !widget.isLoading, // 加载时禁用输入
                   decoration: InputDecoration(
-                    hintText: '输入您的消息...', // 提示文本
+                    hintText: 'Enter your message...', // 提示文本
                     hintStyle: TextStyle(
                       color: HSLColor.fromAHSL(0.6, 315, 0.65, 0.75).toColor(),
-                      fontSize: 14,
+                      fontSize: FontConfig.getCurrentFontSizes().hintText,
                     ),
                     border: InputBorder.none, // 无边框
                     contentPadding: const EdgeInsets.symmetric(
@@ -176,7 +205,7 @@ class _ChatInputState extends State<ChatInput> {
                   onSubmitted: (_) => _sendMessage(), // 键盘发送时触发
                   style: TextStyle(
                     color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(), // 深Amor色文字
-                    fontSize: 14,
+                    fontSize: FontConfig.getCurrentFontSizes().inputText,
                   ),
                 ),
               ),
@@ -185,18 +214,78 @@ class _ChatInputState extends State<ChatInput> {
             // 麦克风按钮
             GestureDetector(
               onTap: widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
-              child: Container(
-                width: 48,
-                height: 48,
-                child: Icon(
-                  // 录音时显示停止图标，正常时显示麦克风图标
-                  _isRecording ? Icons.stop : Icons.mic,
-                  // 录音时红色，正常时使用发送按钮的粉色
-                  color: _isRecording
-                      ? Colors.red
-                      : const Color(0xFFE91E63),
-                  size: 24,
-                ),
+              child: AnimatedBuilder(
+                animation: _pulseAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _isRecording ? _pulseAnimation.value : 1.0,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: _isRecording
+                              ? [
+                                  Colors.red.shade400,
+                                  Colors.red.shade600,
+                                  Colors.red.shade700,
+                                ]
+                              : [
+                                  HSLColor.fromAHSL(1.0, 350, 0.75, 0.70).toColor(), // 红色调
+                                  HSLColor.fromAHSL(1.0, 315, 0.70, 0.75).toColor(), // 中间色调
+                                  HSLColor.fromAHSL(1.0, 280, 0.65, 0.80).toColor(), // 紫色调
+                                ],
+                          stops: const [0.0, 0.5, 1.0],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (_isRecording
+                                    ? Colors.red.withOpacity(0.3)
+                                    : HSLColor.fromAHSL(1.0, 315, 0.70, 0.75).toColor())
+                                .withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(24),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: widget.isLoading ? null : _handleMicrophonePress,
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            alignment: Alignment.center,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: _isRecording
+                                  ? Container(
+                                      key: const ValueKey('recording'),
+                                      width: 16,
+                                      height: 16,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                    )
+                                  : Icon(
+                                      key: const ValueKey('microphone'),
+                                      Icons.mic,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 8), // 麦克风与发送按钮间距
@@ -213,9 +302,9 @@ class _ChatInputState extends State<ChatInput> {
                           Colors.grey.shade500,
                         ]
                       : [
-                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(), // 中浅Amor色
-                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor(), // Amor主色
-                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.70).toColor(), // 中深Amor色
+                          HSLColor.fromAHSL(1.0, 350, 0.75, 0.65).toColor(), // 红色调
+                          HSLColor.fromAHSL(1.0, 315, 0.70, 0.70).toColor(), // 中间色调
+                          HSLColor.fromAHSL(1.0, 280, 0.65, 0.75).toColor(), // 紫色调
                         ],
                   stops: const [0.0, 0.5, 1.0],
                 ),
@@ -224,7 +313,7 @@ class _ChatInputState extends State<ChatInput> {
                   BoxShadow(
                     color: (widget.isLoading
                             ? Colors.grey.withOpacity(0.3)
-                            : HSLColor.fromAHSL(1.0, 315, 0.65, 0.75).toColor())
+                            : HSLColor.fromAHSL(1.0, 315, 0.70, 0.70).toColor())
                         .withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
