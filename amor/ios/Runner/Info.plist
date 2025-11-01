@@ -56,5 +56,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to microphone for voice input functionality.</string>
 </dict>
 </plist>

@@ -349,27 +349,20 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              HSLColor.fromAHSL(1.0, 350, 0.75, 0.55).toColor(), // --amor-red: 350 75% 55%
-              HSLColor.fromAHSL(1.0, 280, 0.55, 0.65).toColor(), // --amor-purple: 280 55% 65%
+              Color(0xFFE91E63), // 与 HTML 一致的粉红色
+              Color(0xFF9C27B0), // 与 HTML 一致的紫色
             ],
           ),
         ),
         child: Column(
           children: [
-            // App bar - using Amor primary color gradient
+            // App bar - transparent to show background gradient
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    Color(0xFFE91E63), // 鲜艳的粉红色
-                    Color(0xFF9C27B0), // 鲜艳的紫色
-                  ],
-                ),
+                // 移除 AppBar 的独立渐变，让背景渐变透过
                 boxShadow: [
                   BoxShadow(
                     color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
