@@ -29,7 +29,8 @@ class ChatInput extends StatefulWidget {
 
 /// ChatInput组件的状态类
 /// 管理文本输入控制器、焦点节点和消息发送逻辑
-class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMixin {
+class _ChatInputState extends State<ChatInput>
+    with SingleTickerProviderStateMixin {
   /// 文本输入控制器，用于管理输入框的文本内容
   final TextEditingController _controller = TextEditingController();
 
@@ -48,13 +49,13 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    
+
     // 初始化动画控制器
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     // 创建脉冲动画
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
       CurvedAnimation(
@@ -62,7 +63,7 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
         curve: Curves.easeInOut,
       ),
     );
-    
+
     // 延迟获取焦点，确保组件完全构建完成
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
@@ -101,7 +102,7 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
   Future<void> _handleMicrophonePress() async {
     // 添加触觉反馈
     HapticFeedback.lightImpact();
-    
+
     if (_isRecording) {
       // 停止录音
       setState(() {
@@ -142,19 +143,14 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16), // 内边距
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2), // 压缩上下内边距，减少空隙
+      decoration: const BoxDecoration(
         color: Colors.white, // 白色背景
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2), // 向上的阴影效果
-          ),
-        ],
+        // 移除阴影效果以减少视觉上的空间占用
       ),
       child: SafeArea(
-        // 确保内容不被系统UI遮挡
+        top: false, // 不为顶部添加安全区域
+        bottom: false, // 关闭底部安全区以消除底部白色空隙
         child: Row(
           children: [
             // 输入框区域
@@ -165,23 +161,25 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(), // 非常浅的Amor色
-                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(), // 浅Amor色
+                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.98)
+                          .toColor(), // 非常浅的Amor色
+                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.96)
+                          .toColor(), // 浅Amor色
                       Colors.white, // 白色
                     ],
                     stops: const [0.0, 0.5, 1.0],
                   ),
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(20), // 进一步减小圆角
                   boxShadow: [
                     BoxShadow(
-                      color: HSLColor.fromAHSL(0.1, 315, 0.65, 0.60).toColor(),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+                      color: HSLColor.fromAHSL(0.05, 315, 0.65, 0.60).toColor(), // 减少阴影透明度
+                      blurRadius: 2, // 减少模糊半径
+                      offset: const Offset(0, 1), // 减少阴影偏移
                     ),
                   ],
                   border: Border.all(
-                    color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.75).toColor(),
-                    width: 1,
+                    color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.75).toColor(), // 减少边框透明度
+                    width: 0.5, // 减少边框宽度
                   ),
                 ),
                 child: TextField(
@@ -196,32 +194,34 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
                     ),
                     border: InputBorder.none, // 无边框
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                      horizontal: 12, // 进一步减少水平内边距
+                      vertical: 4, // 压缩垂直内边距
                     ),
                   ),
                   maxLines: null, // 支持多行输入
                   textInputAction: TextInputAction.send, // 键盘显示发送按钮
                   onSubmitted: (_) => _sendMessage(), // 键盘发送时触发
                   style: TextStyle(
-                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40).toColor(), // 深Amor色文字
+                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40)
+                        .toColor(), // 深Amor色文字
                     fontSize: FontConfig.getCurrentFontSizes().inputText,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 12), // 输入框与按钮间距
+            const SizedBox(width: 6), // 进一步减少输入框与按钮间距
             // 麦克风按钮
             GestureDetector(
-              onTap: widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
+              onTap:
+                  widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
               child: AnimatedBuilder(
                 animation: _pulseAnimation,
                 builder: (context, child) {
                   return Transform.scale(
                     scale: _isRecording ? _pulseAnimation.value : 1.0,
                     child: Container(
-                      width: 48,
-                      height: 48,
+                      width: 38, // 进一步减小按钮尺寸
+                      height: 38,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
@@ -233,51 +233,56 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
                                   Colors.red.shade700,
                                 ]
                               : [
-                                  HSLColor.fromAHSL(1.0, 350, 0.75, 0.70).toColor(), // 红色调
-                                  HSLColor.fromAHSL(1.0, 315, 0.70, 0.75).toColor(), // 中间色调
-                                  HSLColor.fromAHSL(1.0, 280, 0.65, 0.80).toColor(), // 紫色调
+                                  HSLColor.fromAHSL(1.0, 350, 0.75, 0.70)
+                                      .toColor(), // 红色调
+                                  HSLColor.fromAHSL(1.0, 315, 0.70, 0.75)
+                                      .toColor(), // 中间色调
+                                  HSLColor.fromAHSL(1.0, 280, 0.65, 0.80)
+                                      .toColor(), // 紫色调
                                 ],
                           stops: const [0.0, 0.5, 1.0],
                         ),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(19),
                         boxShadow: [
                           BoxShadow(
                             color: (_isRecording
-                                    ? Colors.red.withOpacity(0.3)
-                                    : HSLColor.fromAHSL(1.0, 315, 0.70, 0.75).toColor())
-                                .withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                                    ? Colors.red.withOpacity(0.2)
+                                    : HSLColor.fromAHSL(1.0, 315, 0.70, 0.75)
+                                        .toColor())
+                                .withOpacity(0.2), // 减少阴影透明度
+                            blurRadius: 4, // 减少模糊半径
+                            offset: const Offset(0, 2), // 减少阴影偏移
                           ),
                         ],
                       ),
                       child: Material(
                         color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(19),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: widget.isLoading ? null : _handleMicrophonePress,
+                          borderRadius: BorderRadius.circular(19),
+                          onTap:
+                              widget.isLoading ? null : _handleMicrophonePress,
                           child: Container(
-                            width: 48,
-                            height: 48,
+                            width: 38,
+                            height: 38,
                             alignment: Alignment.center,
                             child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 200),
                               child: _isRecording
                                   ? Container(
                                       key: const ValueKey('recording'),
-                                      width: 16,
-                                      height: 16,
+                                      width: 12, // 进一步减小录音图标
+                                      height: 12,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(3),
+                                        borderRadius: BorderRadius.circular(2),
                                       ),
                                     )
                                   : Icon(
                                       key: const ValueKey('microphone'),
                                       Icons.mic,
                                       color: Colors.white,
-                                      size: 24,
+                                      size: 18, // 进一步减小图标尺寸
                                     ),
                             ),
                           ),
@@ -288,7 +293,7 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
                 },
               ),
             ),
-            const SizedBox(width: 8), // 麦克风与发送按钮间距
+            const SizedBox(width: 4), // 进一步减少麦克风与发送按钮间距
             // 发送按钮
             Container(
               decoration: BoxDecoration(
@@ -302,47 +307,51 @@ class _ChatInputState extends State<ChatInput> with SingleTickerProviderStateMix
                           Colors.grey.shade500,
                         ]
                       : [
-                          HSLColor.fromAHSL(1.0, 350, 0.75, 0.65).toColor(), // 红色调
-                          HSLColor.fromAHSL(1.0, 315, 0.70, 0.70).toColor(), // 中间色调
-                          HSLColor.fromAHSL(1.0, 280, 0.65, 0.75).toColor(), // 紫色调
+                          HSLColor.fromAHSL(1.0, 350, 0.75, 0.65)
+                              .toColor(), // 红色调
+                          HSLColor.fromAHSL(1.0, 315, 0.70, 0.70)
+                              .toColor(), // 中间色调
+                          HSLColor.fromAHSL(1.0, 280, 0.65, 0.75)
+                              .toColor(), // 紫色调
                         ],
                   stops: const [0.0, 0.5, 1.0],
                 ),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(20), // 进一步减小圆角
                 boxShadow: [
                   BoxShadow(
                     color: (widget.isLoading
-                            ? Colors.grey.withOpacity(0.3)
+                            ? Colors.grey.withOpacity(0.2)
                             : HSLColor.fromAHSL(1.0, 315, 0.70, 0.70).toColor())
-                        .withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                        .withOpacity(0.2), // 减少阴影透明度
+                    blurRadius: 4, // 减少模糊半径
+                    offset: const Offset(0, 2), // 减少阴影偏移
                   ),
                 ],
               ),
               child: Material(
                 color: Colors.transparent,
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(20),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(20),
                   onTap: widget.isLoading ? null : _sendMessage,
                   child: Container(
-                    width: 50,
-                    height: 50,
+                    width: 40, // 进一步减小发送按钮尺寸
+                    height: 40,
                     alignment: Alignment.center,
                     child: widget.isLoading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
+                            width: 16, // 进一步减小加载指示器尺寸
+                            height: 16,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Icon(
                             Icons.send,
                             color: Colors.white,
-                            size: 20,
+                            size: 16, // 进一步减小发送图标尺寸
                           ),
                   ),
                 ),

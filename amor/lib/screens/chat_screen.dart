@@ -67,10 +67,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
+      // 使用更短的动画时间和更平滑的曲线
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
       );
     }
   }
@@ -86,6 +87,11 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(userMessage);
       _isLoading = true;
+    });
+
+    // 在消息添加后立即滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
     });
 
     // Simulate backend response
@@ -142,6 +148,11 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(responseMessage);
     });
+    
+    // 在响应消息添加后滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
   }
 
   void _handleProductTypeRequest(String content) {
@@ -187,6 +198,11 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(responseMessage);
     });
+    
+    // 在响应消息添加后滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
   }
 
   void _handleGeneralRequest(String content) {
@@ -199,6 +215,11 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(responseMessage);
       _isLoading = false;
+    });
+    
+    // 在响应消息添加后滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
     });
   }
 
@@ -265,6 +286,11 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(researchMessage);
     });
 
+    // 在研究消息添加后滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+
     // Simulate research completion
     Future.delayed(const Duration(seconds: 2), () {
       _simulateRecommendations(filter);
@@ -324,6 +350,11 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
     setState(() {
       _messages.add(summaryMessage);
     });
+    
+    // 在推荐消息添加后滚动到底部
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
   }
 
   void _clearChat() {
@@ -337,141 +368,142 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
     _addWelcomeMessage();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
-
+    // 移除自动滚动逻辑，避免每次重建都滚动
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE91E63), // 与 HTML 一致的粉红色
-              Color(0xFF9C27B0), // 与 HTML 一致的紫色
-            ],
+      body: GestureDetector(
+        onTap: () {
+          // 点击空白区域时失去焦点
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFE91E63), // 与 HTML 一致的粉红色
+                Color(0xFF9C27B0), // 与 HTML 一致的紫色
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            // App bar - transparent to show background gradient
-            Container(
-              decoration: BoxDecoration(
-                // 移除 AppBar 的独立渐变，让背景渐变透过
-                boxShadow: [
-                  BoxShadow(
-                    color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: AppBar(
-                backgroundColor: Colors.transparent, // Transparent background to show gradient
-                elevation: 0, // Remove default shadow
-                foregroundColor: Colors.white, // White text and icons
-                title: Text(
-                  'Amor',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: FontConfig.getCurrentFontSizes().messageText,
-                    fontWeight: FontWeight.w600,
-                  ),
+          child: Column(
+            children: [
+              // App bar - transparent to show background gradient
+              Container(
+                decoration: BoxDecoration(
+                  // 移除 AppBar 的独立渐变，让背景渐变透过
+                  boxShadow: [
+                    BoxShadow(
+                      color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                centerTitle: true,
-                actions: [
-                  Consumer<AuthProvider>(
-                    builder: (context, authProvider, child) {
-                      // Add debug information
-                      debugPrint('🔍 [CHAT DEBUG] AuthProvider status: isLoggedIn=${authProvider.isLoggedIn}, isInitialized=${authProvider.isInitialized}, user=${authProvider.user?.email ?? 'null'}');
-                      
-                      if (authProvider.isLoggedIn && authProvider.user != null) {
-                        // Logged in: show refresh and sign out buttons
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.refresh, color: Colors.white),
-                              tooltip: 'Clear chat history',
-                              onPressed: _clearChat,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.logout, color: Colors.white),
-                              tooltip: 'Sign out',
-                              onPressed: () async {
-                                debugPrint('🚪 [CHAT DEBUG] Clicked sign out');
-                                await authProvider.signOut();
-                              },
-                            ),
-                          ],
-                        );
-                      } else {
-                        // Not logged in: show Google G icon
-                        return IconButton(
-                          icon: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'G',
-                                style: TextStyle(
-                                  color: Color(0xFF4285F4),
-                                  fontSize: FontConfig.getCurrentFontSizes().inputText,
-                                  fontWeight: FontWeight.bold,
+                child: AppBar(
+                  backgroundColor: Colors.transparent, // Transparent background to show gradient
+                  elevation: 0, // Remove default shadow
+                  foregroundColor: Colors.white, // White text and icons
+                  title: Text(
+                    'Amor',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: FontConfig.getCurrentFontSizes().messageText,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  centerTitle: true,
+                  actions: [
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        // Add debug information
+                        debugPrint('🔍 [CHAT DEBUG] AuthProvider status: isLoggedIn=${authProvider.isLoggedIn}, isInitialized=${authProvider.isInitialized}, user=${authProvider.user?.email ?? 'null'}');
+                        
+                        if (authProvider.isLoggedIn && authProvider.user != null) {
+                          // Logged in: show refresh and sign out buttons
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.refresh, color: Colors.white),
+                                tooltip: 'Clear chat history',
+                                onPressed: _clearChat,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.logout, color: Colors.white),
+                                tooltip: 'Sign out',
+                                onPressed: () async {
+                                  debugPrint('🚪 [CHAT DEBUG] Clicked sign out');
+                                  await authProvider.signOut();
+                                },
+                              ),
+                            ],
+                          );
+                        } else {
+                          // Not logged in: show Google G icon
+                          return IconButton(
+                            icon: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'G',
+                                  style: TextStyle(
+                                    color: Color(0xFF4285F4),
+                                    fontSize: FontConfig.getCurrentFontSizes().inputText,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          tooltip: 'Sign in with Google account',
-                          onPressed: () {
-                            debugPrint('🚀 [CHAT DEBUG] Clicked login button, navigating to login page');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ],
+                            tooltip: 'Sign in with Google account',
+                            onPressed: () {
+                              debugPrint('🚀 [CHAT DEBUG] Clicked login button, navigating to login page');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: _messages.length + (_isLoading ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index < _messages.length) {
-                    final message = _messages[index];
-                    return _buildMessage(message);
-                  } else {
-                    // Show loading message bubble
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: LoadingMessageBubble(),
-                    );
-                  }
-                },
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _messages.length + (_isLoading ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < _messages.length) {
+                      final message = _messages[index];
+                      return _buildMessage(message);
+                    } else {
+                      // Show loading message bubble
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: LoadingMessageBubble(),
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-            ChatInput(
-              onSendMessage: _sendMessage,
-              isLoading: _isLoading,
-            ),
-          ],
+              ChatInput(
+                onSendMessage: _sendMessage,
+                isLoading: _isLoading,
+              ),
+            ],
+          ),
         ),
       ),
     );
