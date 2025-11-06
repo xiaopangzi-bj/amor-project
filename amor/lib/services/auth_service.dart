@@ -413,19 +413,31 @@ class AuthService {
         nonce: hashedNonce,
       );
 
-      if (credential.userIdentifier != null &&
-          credential.userIdentifier!.isNotEmpty) {
-        // 创建用户数据
-        _currentUser = app_models.User(
-          id: credential.userIdentifier ?? '',
-          email: credential.email ?? '',
-          name: '${credential.givenName ?? ''} ${credential.familyName ?? ''}'
-              .trim(),
-          photoUrl: '', // Apple 不提供头像
-          displayName:
-              '${credential.givenName ?? ''} ${credential.familyName ?? ''}'
-                  .trim(),
-        );
+      // 后端校验：必须携带 identityToken 才能进行服务器验证
+      if (credential.identityToken == null ||
+          credential.identityToken!.isEmpty) {
+        throw Exception('未获取到Apple身份令牌（identityToken）');
+      }
+
+      // 将 Apple identityToken 发送到后端进行验证与换发应用JWT
+      try {
+        final backendResponse =
+            await _apiService.verifyAppleToken(credential.identityToken!);
+
+        if (backendResponse['success'] == true &&
+            backendResponse['user'] != null) {
+          _currentUser = app_models.User.fromJson(backendResponse['user']);
+          print('后端验证Apple登录成功，用户: ${_currentUser?.email}');
+        } else {
+          throw Exception(
+              '后端验证失败: ${backendResponse['message'] ?? '未知错误'}');
+        }
+      } catch (apiError) {
+        // 如果后端验证失败，可以选择仅使用本地信息（不推荐用于生产）
+        print('Apple后端验证失败: $apiError');
+        print('错误类型: ${apiError.runtimeType}');
+        // 维持与Google登录一致的安全策略：要求后端验证成功
+        throw Exception('Apple登录验证失败，请检查网络或稍后重试');
       }
 
       _isLoading = false; // 清除加载状态

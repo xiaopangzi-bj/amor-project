@@ -80,6 +80,43 @@ class ApiService {
     }
   }
 
+  /// Apple登录验证
+  /// 将Apple Identity Token发送到后端进行验证
+  /// @param identityToken Apple Identity Token (JWT)
+  /// @return 验证成功返回用户信息和JWT Token
+  Future<Map<String, dynamic>> verifyAppleToken(String identityToken) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('$_baseUrl/login/apple'),
+        headers: _headers,
+        body: jsonEncode({
+          'identity_token': identityToken,
+          'platform': 'ios', // 标识来源平台
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // 保存后端返回的JWT Token
+        if (data['token'] != null) {
+          setAuthToken(data['token']);
+        }
+
+        return data;
+      } else {
+        throw ApiException(
+          'Apple登录验证失败',
+          response.statusCode,
+          response.body,
+        );
+      }
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('网络请求失败', 0, e.toString());
+    }
+  }
+
   /// 刷新用户Token
   /// 当Token即将过期时调用
   Future<Map<String, dynamic>> refreshToken() async {
