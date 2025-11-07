@@ -438,179 +438,249 @@ class ProductRecommendationWidget extends StatelessWidget {
   /// 显示产品图片、信息、评分、价格和特性标签
   /// @param product 产品对象
   Widget _buildProductCard(Product product) {
+    final primaryPrice = product.prices.isNotEmpty ? product.prices.first : null;
+    final secondaryPrice = product.prices.length > 1 ? product.prices[1] : null;
+    final currentPrice = primaryPrice?.price;
+    final originalPrice = secondaryPrice?.price;
+    final currency = primaryPrice?.currency ?? ' ';
+    final displayCurrency = ((primaryPrice?.currency ?? '').toString().trim().isEmpty) ? ' ' : (primaryPrice?.currency ?? ' ');
+    final vendor = primaryPrice?.store ?? product.sellerName ?? product.brand;
+    final hasDiscount = (originalPrice != null && currentPrice != null && originalPrice > 0 && currentPrice < originalPrice);
+    final discountPercent = hasDiscount ? (((originalPrice! - currentPrice!) / originalPrice) * 100).round() : null;
+    final matchPercent = ((product.matchPercentage ?? (product.rating / 5.0 * 100)).clamp(0, 100)).toStringAsFixed(1);
+    final highlight = (product.features.isNotEmpty ? product.features.first : 'Recommended Feature');
+
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            HSLColor.fromAHSL(1.0, 315, 0.65, 0.98).toColor(),
-            HSLColor.fromAHSL(1.0, 315, 0.65, 0.95).toColor(),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.85).toColor(),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.black12, width: 1),
         boxShadow: [
-          BoxShadow(
-            color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.50).toColor(),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 产品图片区域 - 占位符显示
+          // 顶部行：匹配度标签 + 站点名称
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4A90E2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$matchPercent% Match',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: FontConfig.getCurrentFontSizes().timestamp),
+                  ),
+                ),
+                Text(
+                  vendor ?? '',
+                  style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: FontConfig.getCurrentFontSizes().messageText),
+                ),
+              ],
+            ),
+          ),
+
+          // 图片占位区域
           Container(
-            height: 200,
-            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            height: 180,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
-                  HSLColor.fromAHSL(1.0, 315, 0.65, 0.88).toColor(),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              border: Border.all(
-                color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
-                width: 1,
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: (product.imageUrl.isNotEmpty)
+                ? Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stack) => Center(
+                      child: Text(
+                        'Image not available',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: FontConfig.getCurrentFontSizes().messageText),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      'Product Image',
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: FontConfig.getCurrentFontSizes().messageText),
+                    ),
+                  ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // 高亮功能标签（黄色）
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(color: const Color(0xFFF2B500), borderRadius: BorderRadius.circular(8)),
+              child: Text(
+                highlight,
+                style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600, fontSize: FontConfig.getCurrentFontSizes().messageText),
+                textAlign: TextAlign.center,
               ),
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_bag, // 购物袋图标作为占位符
-                    size: 48,
-                    color: Colors.grey.shade400,
-                  ),
-                  const SizedBox(height: 8),
+          ),
+
+          const SizedBox(height: 12),
+
+          // 标题
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              product.name,
+              style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().inputText, fontWeight: FontWeight.w700, color: Colors.black87),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // 评分星星与文本
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                ...List.generate(5, (index) {
+                  final filled = product.rating >= index + 1 || (product.rating > index && product.rating < index + 1);
+                  return Icon(Icons.star, size: 16, color: filled ? const Color(0xFFFFD700) : Colors.grey.shade300);
+                }),
+                const SizedBox(width: 8),
+                Text(
+                  '${product.rating.toStringAsFixed(1)} (${_formatCount(product.reviewCount)})',
+                  style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().messageText, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // 参考价格提示
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Reference Price: *Price may change at checkout',
+              style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().timestamp, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // 价格与折扣
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                if (currentPrice != null)
                   Text(
-                    product.name, // 产品名称
+                    '$displayCurrency${currentPrice.toStringAsFixed(2)}',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: FontConfig.getCurrentFontSizes().inputText,
-                      fontWeight: FontWeight.w500,
+                      fontSize: FontConfig.getCurrentFontSizes().inputText + 6,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFE91E63),
                     ),
-                    textAlign: TextAlign.center,
+                  ),
+                const SizedBox(width: 12),
+                if (hasDiscount && originalPrice != null)
+                  Text(
+                    '$displayCurrency${originalPrice.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: FontConfig.getCurrentFontSizes().messageText,
+                      color: Colors.grey.shade500,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                if (discountPercent != null)
+                  Text(
+                    '-$discountPercent%',
+                    style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().messageText, color: Colors.green.shade700, fontWeight: FontWeight.w600),
+                  ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // 推荐理由卡片
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF5FF),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFBBD1FF)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Why we recommend this:',
+                    style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().messageText, fontWeight: FontWeight.w600, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    product.features.take(3).join(' • '),
+                    style: TextStyle(fontSize: FontConfig.getCurrentFontSizes().messageText, color: Colors.black87),
                   ),
                 ],
               ),
             ),
           ),
-          
+
+          const SizedBox(height: 12),
+
+          // 购买按钮
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 产品标题
-                Text(
-                  product.name,
-                  style: TextStyle(
-                    fontSize: FontConfig.getCurrentFontSizes().inputText,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                
-                const SizedBox(height: 8),
-                
-                // 产品描述
-                Text(
-                  product.description,
-                  style: TextStyle(
-                    fontSize: FontConfig.getCurrentFontSizes().messageText,
-                    color: Colors.grey.shade600,
-                    height: 1.4, // 行高设置
-                  ),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // 评分显示
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.star, // 星形评分图标
-                      color: Color(0xFFFFD700), // 金色
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${product.rating} (${product.reviewCount})', // 评分和评论数
-                      style: TextStyle(
-                        fontSize: FontConfig.getCurrentFontSizes().messageText,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // 价格比较 - 显示不同商店的价格
-                ...product.prices.where((price) => price.price > 0).map((price) => 
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      '${price.store} ${price.currency}${price.price.toInt()}', // 商店名称和价格
-                      style: TextStyle(
-                        fontSize: FontConfig.getCurrentFontSizes().messageText,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // 特性标签 - 显示产品特性的标签云
-                Wrap(
-                  spacing: 8, // 水平间距
-                  runSpacing: 4, // 垂直间距
-                  children: product.features.map((feature) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.96).toColor(),
-                          HSLColor.fromAHSL(1.0, 315, 0.65, 0.92).toColor(),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.80).toColor(),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      feature, // 特性文本
-                      style: TextStyle(
-                        fontSize: FontConfig.getCurrentFontSizes().timestamp,
-                        color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.35).toColor(),
-                      ),
-                    ),
-                  )).toList(),
-                ),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE91E63),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 44),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: Text('Quick Buy on ${vendor ?? 'store'}'),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // 查看链接按钮
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.open_in_new, size: 16),
+              label: Text('View on ${vendor ?? 'store'}'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black87,
+                side: BorderSide(color: Colors.black12),
+                minimumSize: const Size(double.infinity, 44),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatCount(int count) {
+    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}m';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}k';
+    return count.toString();
   }
 
   /// 构建反馈区域UI

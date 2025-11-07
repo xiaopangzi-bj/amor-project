@@ -37,6 +37,9 @@ class _ChatInputState extends State<ChatInput>
   /// 焦点节点，用于管理输入框的焦点状态
   final FocusNode _focusNode = FocusNode();
 
+  /// 是否存在输入文本（用于切换按钮样式）
+  bool _hasText = false;
+
   /// 麦克风是否正在录音
   bool _isRecording = false;
 
@@ -45,7 +48,6 @@ class _ChatInputState extends State<ChatInput>
   late Animation<double> _pulseAnimation;
 
   /// 初始化组件
-  /// 在组件构建完成后自动获取焦点
   @override
   void initState() {
     super.initState();
@@ -64,10 +66,17 @@ class _ChatInputState extends State<ChatInput>
       ),
     );
 
-    // 延迟获取焦点，确保组件完全构建完成
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
+    // 监听输入内容变化，用于切换发送/麦克风按钮
+    _controller.addListener(() {
+      final hasText = _controller.text.trim().isNotEmpty;
+      if (hasText != _hasText) {
+        setState(() {
+          _hasText = hasText;
+        });
+      }
     });
+
+    // 默认不自动获取焦点，避免页面进入时弹出键盘
   }
 
   /// 释放资源
@@ -145,41 +154,22 @@ class _ChatInputState extends State<ChatInput>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2), // 压缩上下内边距，减少空隙
       decoration: const BoxDecoration(
-        color: Colors.white, // 白色背景
-        // 移除阴影效果以减少视觉上的空间占用
+        color: Colors.white, // 纯白背景
       ),
       child: SafeArea(
         top: false, // 不为顶部添加安全区域
-        bottom: false, // 关闭底部安全区以消除底部白色空隙
+        bottom: true, // 保留底部安全区，避免被系统手势区域遮挡
         child: Row(
           children: [
             // 输入框区域
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.98)
-                          .toColor(), // 非常浅的Amor色
-                      HSLColor.fromAHSL(1.0, 315, 0.65, 0.96)
-                          .toColor(), // 浅Amor色
-                      Colors.white, // 白色
-                    ],
-                    stops: const [0.0, 0.5, 1.0],
-                  ),
-                  borderRadius: BorderRadius.circular(20), // 进一步减小圆角
-                  boxShadow: [
-                    BoxShadow(
-                      color: HSLColor.fromAHSL(0.05, 315, 0.65, 0.60).toColor(), // 减少阴影透明度
-                      blurRadius: 2, // 减少模糊半径
-                      offset: const Offset(0, 1), // 减少阴影偏移
-                    ),
-                  ],
+                  color: Colors.grey.shade100, // 参考豆包的浅灰背景
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: HSLColor.fromAHSL(0.15, 315, 0.65, 0.75).toColor(), // 减少边框透明度
-                    width: 0.5, // 减少边框宽度
+                    color: Colors.grey.shade300,
+                    width: 0.8,
                   ),
                 ),
                 child: TextField(
@@ -187,176 +177,117 @@ class _ChatInputState extends State<ChatInput>
                   focusNode: _focusNode, // 绑定焦点节点
                   enabled: !widget.isLoading, // 加载时禁用输入
                   decoration: InputDecoration(
-                    hintText: 'Enter your message...', // 提示文本
+                    hintText: 'Type a message...', // Hint text in English
                     hintStyle: TextStyle(
-                      color: HSLColor.fromAHSL(0.6, 315, 0.65, 0.75).toColor(),
+                      color: Colors.grey.shade500,
                       fontSize: FontConfig.getCurrentFontSizes().hintText,
                     ),
                     border: InputBorder.none, // 无边框
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, // 进一步减少水平内边距
-                      vertical: 4, // 压缩垂直内边距
+                      horizontal: 12,
+                      vertical: 6, // 略微增高，保证可触达性
                     ),
                   ),
                   maxLines: null, // 支持多行输入
                   textInputAction: TextInputAction.send, // 键盘显示发送按钮
                   onSubmitted: (_) => _sendMessage(), // 键盘发送时触发
                   style: TextStyle(
-                    color: HSLColor.fromAHSL(1.0, 315, 0.65, 0.40)
-                        .toColor(), // 深Amor色文字
+                    color: Colors.black87,
                     fontSize: FontConfig.getCurrentFontSizes().inputText,
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 6), // 进一步减少输入框与按钮间距
-            // 麦克风按钮
-            GestureDetector(
-              onTap:
-                  widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
-              child: AnimatedBuilder(
-                animation: _pulseAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _isRecording ? _pulseAnimation.value : 1.0,
-                    child: Container(
-                      width: 38, // 进一步减小按钮尺寸
-                      height: 38,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: _isRecording
-                              ? [
-                                  Colors.red.shade400,
-                                  Colors.red.shade600,
-                                  Colors.red.shade700,
-                                ]
-                              : [
-                                  HSLColor.fromAHSL(1.0, 350, 0.75, 0.70)
-                                      .toColor(), // 红色调
-                                  HSLColor.fromAHSL(1.0, 315, 0.70, 0.75)
-                                      .toColor(), // 中间色调
-                                  HSLColor.fromAHSL(1.0, 280, 0.65, 0.80)
-                                      .toColor(), // 紫色调
-                                ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                        borderRadius: BorderRadius.circular(19),
-                        boxShadow: [
-                          BoxShadow(
-                            color: (_isRecording
-                                    ? Colors.red.withOpacity(0.2)
-                                    : HSLColor.fromAHSL(1.0, 315, 0.70, 0.75)
-                                        .toColor())
-                                .withOpacity(0.2), // 减少阴影透明度
-                            blurRadius: 4, // 减少模糊半径
-                            offset: const Offset(0, 2), // 减少阴影偏移
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(19),
-                        child: InkWell(
+            // 根据输入内容显示麦克风或发送按钮（参考豆包交互）
+            if (!_hasText) ...[
+              GestureDetector(
+                onTap:
+                    widget.isLoading ? null : _handleMicrophonePress, // 加载时禁用点击
+                child: AnimatedBuilder(
+                  animation: _pulseAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _isRecording ? _pulseAnimation.value : 1.0,
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: _isRecording
+                              ? Colors.red.shade600
+                              : Colors.pink.shade500,
                           borderRadius: BorderRadius.circular(19),
-                          onTap:
-                              widget.isLoading ? null : _handleMicrophonePress,
-                          child: Container(
-                            width: 38,
-                            height: 38,
-                            alignment: Alignment.center,
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 200),
-                              child: _isRecording
-                                  ? Container(
-                                      key: const ValueKey('recording'),
-                                      width: 12, // 进一步减小录音图标
-                                      height: 12,
-                                      decoration: BoxDecoration(
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(19),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(19),
+                            onTap: widget.isLoading ? null : _handleMicrophonePress,
+                            child: Container(
+                              width: 38,
+                              height: 38,
+                              alignment: Alignment.center,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 200),
+                                child: _isRecording
+                                    ? Container(
+                                        key: const ValueKey('recording'),
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(2),
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.mic,
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(2),
+                                        size: 18,
                                       ),
-                                    )
-                                  : Icon(
-                                      key: const ValueKey('microphone'),
-                                      Icons.mic,
-                                      color: Colors.white,
-                                      size: 18, // 进一步减小图标尺寸
-                                    ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 4), // 进一步减少麦克风与发送按钮间距
-            // 发送按钮
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: widget.isLoading
-                      ? [
-                          Colors.grey.shade300,
-                          Colors.grey.shade400,
-                          Colors.grey.shade500,
-                        ]
-                      : [
-                          HSLColor.fromAHSL(1.0, 350, 0.75, 0.65)
-                              .toColor(), // 红色调
-                          HSLColor.fromAHSL(1.0, 315, 0.70, 0.70)
-                              .toColor(), // 中间色调
-                          HSLColor.fromAHSL(1.0, 280, 0.65, 0.75)
-                              .toColor(), // 紫色调
-                        ],
-                  stops: const [0.0, 0.5, 1.0],
+                    );
+                  },
                 ),
-                borderRadius: BorderRadius.circular(20), // 进一步减小圆角
-                boxShadow: [
-                  BoxShadow(
-                    color: (widget.isLoading
-                            ? Colors.grey.withOpacity(0.2)
-                            : HSLColor.fromAHSL(1.0, 315, 0.70, 0.70).toColor())
-                        .withOpacity(0.2), // 减少阴影透明度
-                    blurRadius: 4, // 减少模糊半径
-                    offset: const Offset(0, 2), // 减少阴影偏移
-                  ),
-                ],
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-                child: InkWell(
+            ] else ...[
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.transparent, // 保持外层容器背景透明
+                ),
+                child: Material(
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
-                  onTap: widget.isLoading ? null : _sendMessage,
-                  child: Container(
-                    width: 40, // 进一步减小发送按钮尺寸
-                    height: 40,
-                    alignment: Alignment.center,
-                    child: widget.isLoading
-                        ? const SizedBox(
-                            width: 16, // 进一步减小加载指示器尺寸
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: widget.isLoading ? null : _sendMessage,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      child: widget.isLoading
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.pink.shade500),
+                              ),
+                            )
+                          : Icon(
+                              Icons.send,
+                              color: Colors.pink.shade500, // 图标使用主题色，背景透明
+                              size: 18,
                             ),
-                          )
-                        : const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                            size: 16, // 进一步减小发送图标尺寸
-                          ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ]
           ],
         ),
       ),

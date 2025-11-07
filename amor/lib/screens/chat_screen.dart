@@ -388,24 +388,27 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
               ],
             ),
           ),
-          child: Column(
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              // App bar - transparent to show background gradient
-              Container(
-                decoration: BoxDecoration(
-                  // 移除 AppBar 的独立渐变，让背景渐变透过
-                  boxShadow: [
-                    BoxShadow(
-                      color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: AppBar(
-                  backgroundColor: Colors.transparent, // Transparent background to show gradient
-                  elevation: 0, // Remove default shadow
-                  foregroundColor: Colors.white, // White text and icons
+              Column(
+                children: [
+                  // App bar - transparent to show background gradient
+                  Container(
+                  decoration: BoxDecoration(
+                    // 移除 AppBar 的独立渐变，让背景渐变透过
+                    boxShadow: [
+                      BoxShadow(
+                        color: HSLColor.fromAHSL(0.2, 315, 0.65, 0.60).toColor(),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: AppBar(
+                    backgroundColor: Colors.transparent, // Transparent background to show gradient
+                    elevation: 0, // Remove default shadow
+                    foregroundColor: Colors.white, // White text and icons
                   title: Text(
                     'Amor',
                     style: TextStyle(
@@ -478,29 +481,40 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
                     ),
                   ],
                 ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: MediaQuery.of(context).padding.bottom + 96, // 为悬浮输入框预留空间
+                      ),
+                      itemCount: _messages.length + (_isLoading ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < _messages.length) {
+                          final message = _messages[index];
+                          return _buildMessage(message);
+                        } else {
+                          // Show loading message bubble
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: LoadingMessageBubble(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _messages.length + (_isLoading ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index < _messages.length) {
-                      final message = _messages[index];
-                      return _buildMessage(message);
-                    } else {
-                      // Show loading message bubble
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: LoadingMessageBubble(),
-                      );
-                    }
-                  },
+              // 悬浮于页面底部的输入框
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ChatInput(
+                  onSendMessage: _sendMessage,
+                  isLoading: _isLoading,
                 ),
-              ),
-              ChatInput(
-                onSendMessage: _sendMessage,
-                isLoading: _isLoading,
               ),
             ],
           ),

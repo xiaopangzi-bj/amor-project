@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// 产品数据模型
 /// 表示购物应用中的商品信息，包含基本信息、价格、评价等详细数据
 class Product {
@@ -31,6 +33,18 @@ class Product {
   /// 产品品牌
   final String brand;
 
+  /// 匹配百分比（可选，来自接口的 matchPercentage 字段）
+  final double? matchPercentage;
+
+  /// 快速购买链接（可选）
+  final String? quickBuyUrl;
+
+  /// 产品详情链接（可选）
+  final String? productUrl;
+
+  /// 商家名称（可选）
+  final String? sellerName;
+
   /// 构造函数
   /// 创建一个包含完整产品信息的Product实例
   Product({
@@ -44,6 +58,10 @@ class Product {
     required this.features,
     required this.category,
     required this.brand,
+    this.matchPercentage,
+    this.quickBuyUrl,
+    this.productUrl,
+    this.sellerName,
   });
 
   /// 从JSON数据创建产品对象
@@ -51,17 +69,87 @@ class Product {
   /// @param json 包含产品信息的JSON Map
   /// @return Product实例
   factory Product.fromJson(Map<String, dynamic> json) {
+    // 兼容新的接口 records 结构
+    if (json.containsKey('title')) {
+      // 解析图片
+      String imageUrl = json['mainImageUrl'] ?? json['imageUrl'] ?? '';
+      if ((imageUrl.isEmpty || imageUrl == 'null') && json['imageUrls'] != null) {
+        try {
+          final imgs = json['imageUrls'];
+          if (imgs is String) {
+            final list = List<String>.from(jsonDecode(imgs));
+            if (list.isNotEmpty) imageUrl = list.first;
+          } else if (imgs is List) {
+            final list = List<String>.from(imgs.map((e) => e.toString()));
+            if (list.isNotEmpty) imageUrl = list.first;
+          }
+        } catch (_) {}
+      }
+
+      // 解析特性
+      List<String> features = [];
+      dynamic badges = json['badges'];
+      try {
+        if (badges is String) {
+          features = List<String>.from(jsonDecode(badges));
+        } else if (badges is List) {
+          features = List<String>.from(badges.map((e) => e.toString()));
+        }
+      } catch (_) {}
+      if (features.isEmpty && json['promotionTags'] != null) {
+        try {
+          final tags = json['promotionTags'];
+          if (tags is String) {
+            features = List<String>.from(jsonDecode(tags));
+          } else if (tags is List) {
+            features = List<String>.from(tags.map((e) => e.toString()));
+          }
+        } catch (_) {}
+      }
+      if (features.isEmpty && json['recommendationReason'] != null && (json['recommendationReason'] as String).isNotEmpty) {
+        features = [json['recommendationReason']];
+      }
+
+      // 价格信息
+      final currency = (json['currency'] ?? '\$').toString();
+      final currentPrice = (json['currentPrice'] is num) ? (json['currentPrice'] as num).toDouble() : 0.0;
+      final originalPrice = (json['originalPrice'] is num) ? (json['originalPrice'] as num).toDouble() : 0.0;
+      final sellerName = json['sellerName']?.toString();
+      final prices = <PriceInfo>[
+        if (currentPrice > 0)
+          PriceInfo(store: sellerName ?? (json['platform']?.toString() ?? 'store'), price: currentPrice, currency: currency),
+        if (originalPrice > 0)
+          PriceInfo(store: '${sellerName ?? 'store'} MSRP', price: originalPrice, currency: currency),
+      ];
+
+      return Product(
+        id: (json['productId'] ?? json['id']).toString(),
+        name: json['title'] ?? '',
+        description: json['productDescription'] ?? (json['description'] ?? ''),
+        imageUrl: imageUrl,
+        rating: (json['rating'] is num) ? (json['rating'] as num).toDouble() : 0.0,
+        reviewCount: (json['reviewsCount'] is num) ? (json['reviewsCount'] as num).toInt() : 0,
+        prices: prices,
+        features: features,
+        category: json['categoryName'] ?? (json['rootCategory'] ?? (json['category'] ?? '')),
+        brand: json['brand'] ?? '',
+        matchPercentage: (json['matchPercentage'] is num) ? (json['matchPercentage'] as num).toDouble() : null,
+        quickBuyUrl: json['quickBuyUrl']?.toString(),
+        productUrl: json['productUrl']?.toString(),
+        sellerName: sellerName,
+      );
+    }
+
+    // 原有结构兼容
     return Product(
       id: json['id'],
       name: json['name'],
       description: json['description'],
       imageUrl: json['imageUrl'],
-      rating: json['rating'].toDouble(), // 确保评分为double类型
+      rating: (json['rating'] as num).toDouble(),
       reviewCount: json['reviewCount'],
-      prices: (json['prices'] as List)
-          .map((price) => PriceInfo.fromJson(price)) // 转换价格信息列表
-          .toList(),
-      features: List<String>.from(json['features']), // 转换特性列表
+      prices: (json['prices'] as List).map((price) => PriceInfo.fromJson(price)).toList(),
+      features: List<String>.from(json['features']),
       category: json['category'],
       brand: json['brand'],
     );
@@ -82,6 +170,10 @@ class Product {
       'features': features,
       'category': category,
       'brand': brand,
+      'matchPercentage': matchPercentage,
+      'quickBuyUrl': quickBuyUrl,
+      'productUrl': productUrl,
+      'sellerName': sellerName,
     };
   }
 }
