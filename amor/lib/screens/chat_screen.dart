@@ -11,8 +11,10 @@ import '../widgets/product_recommendation_widget.dart';
 import '../widgets/product_cards_widget.dart';
 import '../widgets/chat_input.dart';
 import '../config/font_config.dart';
+import '../config/prompt_config.dart';
 import 'login_screen.dart';
 import '../services/api_service.dart';
+import '../services/deepseek_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -32,6 +34,8 @@ class _ChatScreenState extends State<ChatScreen> {
   
   // 接入后端服务
   final ApiService _apiService = ApiService();
+  // AI 对话服务
+  final DeepSeekService _deepSeekService = DeepSeekService();
 
   @override
   void initState() {
@@ -113,20 +117,62 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _handleUserMessage(String content) {
+    // 本地拦截：当用户询问“这是什么/做什么/你是谁”等，直接用提示词回复
+    if (_isAboutQuestion(content)) {
+      final aboutMsg = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: PromptConfig.aboutAssistant,
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+      setState(() {
+        _messages.add(aboutMsg);
+        _isLoading = false;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      return;
+    }
     if (content.contains('coat') || content.contains('jacket')) {
       _handleProductCategoryRequest(content);
     } else if (content.contains('bomber') || content.contains('denim') || content.contains('leather')) {
       _handleProductTypeRequest(content);
     } else {
-      _handleGeneralRequest(content);
+      _handleGeneralAICompletion(content);
     }
+  }
+
+  bool _isAboutQuestion(String content) {
+    final text = content.trim().toLowerCase();
+    // 简单关键词匹配（中英文）
+    final patterns = <String>[
+      '做什么', '是什么', '你是谁', '用途', '作用', '介绍一下', '介绍下',
+      'what is this', 'what do you do', 'who are you', 'what can you do', 'about you',
+    ];
+    return patterns.any((p) => text.contains(p));
   }
 
   // 解析“买一个”后的关键字
   String? _extractBuyOneKeyword(String content) {
-    final idx = content.indexOf('买一个');
-    if (idx == -1) return null;
-    final keyword = content.substring(idx + '买一个'.length).trim();
+    // 支持中文与英文触发词："买一个"、"buy an"、"buy a"
+    final lc = content.toLowerCase();
+    final triggers = ['买一个', 'buy an', 'buy a'];
+    int foundIdx = -1;
+    String foundTrigger = '';
+
+    for (final t in triggers) {
+      final i = lc.indexOf(t);
+      if (i != -1 && (foundIdx == -1 || i < foundIdx)) {
+        foundIdx = i;
+        foundTrigger = t;
+      }
+    }
+
+    if (foundIdx == -1) return null;
+
+    // 提取触发词后的文本作为关键字
+    String keyword = content.substring(foundIdx + foundTrigger.length).trim();
+    // 去除开头的标点符号与空格
+    keyword = keyword.replaceFirst(RegExp(r'^[,.:;，。；、!！\?\s]+'), '').trim();
     return keyword.isNotEmpty ? keyword : null;
   }
 
@@ -273,22 +319,101 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _handleGeneralRequest(String content) {
-    final responseMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: 'I\'m your AI shopping research assistant, and I can help you find the most suitable products. Please tell me what you want to buy?',
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
+  /// 通用对话：调用 DeepSeek 获取回复
+  Future<void> _handleGeneralAICompletion(String content) async {
     setState(() {
-      _messages.add(responseMessage);
-      _isLoading = false;
+      _isLoading = true;
     });
-    
-    // 在响应消息添加后滚动到底部
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
+
+    try {
+      // 构建最近对话上下文，限制长度避免过长
+      final int maxContext = 8;
+      final recent = _messages.length > maxContext
+          ? _messages.sublist(_messages.length - maxContext)
+          : _messages;
+      final messagesPayload = [
+        for (final m in recent)
+          {
+            'role': m.isUser ? 'user' : 'assistant',
+            'content': m.content,
+          },
+        {
+          'role': 'user',
+          'content': content,
+        }
+      ];
+
+      // 先插入一个空的 AI 消息占位，用于逐字填充
+      final placeholderId = DateTime.now().millisecondsSinceEpoch.toString();
+      setState(() {
+        _messages.add(ChatMessage(
+          id: placeholderId,
+          content: '',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
+      final stream = _deepSeekService.chatStream(
+        messages: List<Map<String, String>>.from(messagesPayload),
+      );
+
+      String buffer = '';
+      bool gotDelta = false;
+      final int aiIndex = _messages.length - 1;
+
+      await for (final delta in stream) {
+        buffer += delta;
+        gotDelta = true;
+        // 收到首个增量后取消 Loading 消息气泡，仅保留增量渲染
+        if (_isLoading) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        // 更新占位消息内容
+        setState(() {
+          _messages[aiIndex] = ChatMessage(
+            id: _messages[aiIndex].id,
+            content: buffer,
+            isUser: false,
+            timestamp: _messages[aiIndex].timestamp,
+          );
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      }
+
+      // 流结束，若未收到任何增量，兜底调用非流式接口
+      if (!gotDelta) {
+        final reply = await _deepSeekService.chat(
+          messages: List<Map<String, String>>.from(messagesPayload),
+        );
+        setState(() {
+          _messages[aiIndex] = ChatMessage(
+            id: _messages[aiIndex].id,
+            content: reply.trim().isEmpty ? '（空回复）' : reply.trim(),
+            isUser: false,
+            timestamp: _messages[aiIndex].timestamp,
+          );
+          _isLoading = false;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      }
+    } catch (e) {
+      final fallback = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content:
+            '暂时无法连接到 DeepSeek。请确认已通过 --dart-define 注入 DEEPSEEK_API_KEY，或稍后重试。\n错误：$e',
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+      setState(() {
+        _messages.add(fallback);
+        _isLoading = false;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    }
   }
 
   void _selectFilter(ProductFilter filter) {
