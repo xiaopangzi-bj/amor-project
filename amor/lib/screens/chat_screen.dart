@@ -8,9 +8,11 @@ import '../widgets/loading_message_bubble.dart';
 import '../widgets/product_filter_widget.dart';
 import '../widgets/research_widget.dart';
 import '../widgets/product_recommendation_widget.dart';
+import '../widgets/product_cards_widget.dart';
 import '../widgets/chat_input.dart';
 import '../config/font_config.dart';
 import 'login_screen.dart';
+import '../services/api_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -27,6 +29,9 @@ class _ChatScreenState extends State<ChatScreen> {
   List<ResearchStep> _researchSteps = [];
   List<Product> _recommendedProducts = [];
   String? _vettedAnalysis;
+  
+  // 接入后端服务
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
@@ -94,7 +99,14 @@ class _ChatScreenState extends State<ChatScreen> {
       _scrollToBottom();
     });
 
-    // Simulate backend response
+    // 检查是否包含“买一个”并优先处理搜索逻辑
+    final keyword = _extractBuyOneKeyword(content);
+    if (keyword != null && keyword.isNotEmpty) {
+      _handleBuyOneSearch(keyword);
+      return;
+    }
+
+    // 其它逻辑保持不变（模拟响应）
     Future.delayed(const Duration(seconds: 1), () {
       _handleUserMessage(content);
     });
@@ -107,6 +119,62 @@ class _ChatScreenState extends State<ChatScreen> {
       _handleProductTypeRequest(content);
     } else {
       _handleGeneralRequest(content);
+    }
+  }
+
+  // 解析“买一个”后的关键字
+  String? _extractBuyOneKeyword(String content) {
+    final idx = content.indexOf('买一个');
+    if (idx == -1) return null;
+    final keyword = content.substring(idx + '买一个'.length).trim();
+    return keyword.isNotEmpty ? keyword : null;
+  }
+
+  // 调用接口按标题搜索并直接展示商品卡片
+  Future<void> _handleBuyOneSearch(String keyword) async {
+    setState(() {
+      _isLoading = true;
+      _recommendedProducts = [];
+      _vettedAnalysis = null;
+    });
+
+    try {
+      final result = await _apiService.searchProductsByTitle(title: keyword, size: 20, queryType: 0);
+      final items = List<Product>.from(result['items'] ?? const []);
+
+      setState(() {
+        _recommendedProducts = items;
+        _isLoading = false;
+      });
+
+      final cardsMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: '为你找到${items.length}件与“$keyword”相关的商品',
+        isUser: false,
+        timestamp: DateTime.now(),
+        type: MessageType.productCards,
+        data: {'products': items.map((p) => p.toJson()).toList()},
+      );
+      setState(() {
+        _messages.add(cardsMessage);
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      final errorMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: '搜索失败，请稍后重试。',
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+      setState(() {
+        _messages.add(errorMessage);
+      });
     }
   }
 
@@ -546,6 +614,11 @@ ${filter.title} is a classic fashion item for men, emphasizing material, warmth,
         return ProductRecommendationWidget(
           message: message,
           analysis: _vettedAnalysis ?? '',
+          products: _recommendedProducts,
+        );
+      case MessageType.productCards:
+        return ProductCardsWidget(
+          message: message,
           products: _recommendedProducts,
         );
       case MessageType.skipOption:

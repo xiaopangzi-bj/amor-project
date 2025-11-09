@@ -378,6 +378,71 @@ class ApiService {
       throw ApiException('网络请求失败', 0, e.toString());
     }
   }
+
+  /// 按标题关键字搜索商品列表
+  /// 请求路径: /api/products/list
+  /// 固定参数: queryType=0（搜索），size（返回数量），title（关键字）
+  /// 返回: 与 getProductsList 相同的结构
+  Future<Map<String, dynamic>> searchProductsByTitle({
+    required String title,
+    int size = 20,
+    int queryType = 0,
+  }) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('$_baseUrl/api/products/list'),
+        headers: _headers,
+        body: jsonEncode({
+          'queryType': queryType,
+          'size': size,
+          'title': title,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // 统一解析 { data: { records: [...], current, size, total } }
+        Map<String, dynamic>? inner;
+        if (data is Map<String, dynamic> && data['data'] is Map<String, dynamic>) {
+          inner = Map<String, dynamic>.from(data['data']);
+        }
+
+        dynamic listData;
+        if (inner != null && inner['records'] is List) {
+          listData = inner['records'];
+        } else if (data is List) {
+          listData = data;
+        } else if (data is Map<String, dynamic>) {
+          listData = data['list'] ?? data['items'];
+        }
+
+        List<Product> items = [];
+        if (listData is List) {
+          items = List<Product>.from(
+            listData.map((e) => Product.fromJson(Map<String, dynamic>.from(e))),
+          );
+        }
+
+        return {
+          'items': items,
+          'raw': data,
+          'page': inner != null ? (inner['current'] ?? 1) : 1,
+          'pageSize': inner != null ? (inner['size'] ?? size) : size,
+          'total': inner != null ? (inner['total'] ?? items.length) : (data is Map<String, dynamic> ? (data['total'] ?? items.length) : items.length),
+        };
+      } else {
+        throw ApiException(
+          '搜索商品列表失败',
+          response.statusCode,
+          response.body,
+        );
+      }
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('网络请求失败', 0, e.toString());
+    }
+  }
 }
 
 /// API异常类

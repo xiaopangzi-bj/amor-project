@@ -83,6 +83,9 @@ enum MessageType {
   
   /// 产品推荐消息（包含推荐的产品列表）
   productRecommendation,
+
+  /// 仅商品卡片（不含分析/研究等模块）
+  productCards,
   
   /// 跳过选项消息（提供跳过当前步骤的选项）
   skipOption,
